@@ -1,0 +1,1664 @@
+<title>Orange Track Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ground:#E9EBEF; --panel:#FBFCFD; --panel-2:#F1F3F6; --panel-3:#E3E7ED;
+  --ink:#161A20; --ink-2:#4A515C; --ink-3:#7C8593;
+  --line:#D3D8DF; --line-2:#BFC7D1;
+  --track:#FF6A00; --ember:#C24A00; --track-soft:#FFE7D6;
+  --draft:#6E8CB5;
+  --go:#0F8F63; --warn:#A96C00; --fault:#CE2438;
+  --go-soft:#DCF3E9; --warn-soft:#FBEDD3; --fault-soft:#FBE0E3;
+  --sheet:#FCFCFA; --grid:#DCE1E8;
+  --shadow:0 1px 2px rgba(20,26,36,.06), 0 8px 24px -12px rgba(20,26,36,.18);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#101319; --panel:#181C23; --panel-2:#1F242D; --panel-3:#272D38;
+    --ink:#EDF0F4; --ink-2:#AAB3BF; --ink-3:#78818E;
+    --line:#2A303A; --line-2:#3A414D;
+    --track:#FF7C22; --ember:#FFA265; --track-soft:#3B2415;
+    --draft:#84A6D2;
+    --go:#3DDC97; --warn:#FFC145; --fault:#FF6373;
+    --go-soft:#12312A; --warn-soft:#33280F; --fault-soft:#36191F;
+    --sheet:#12161D; --grid:#212734;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101319; --panel:#181C23; --panel-2:#1F242D; --panel-3:#272D38;
+  --ink:#EDF0F4; --ink-2:#AAB3BF; --ink-3:#78818E;
+  --line:#2A303A; --line-2:#3A414D;
+  --track:#FF7C22; --ember:#FFA265; --track-soft:#3B2415;
+  --draft:#84A6D2;
+  --go:#3DDC97; --warn:#FFC145; --fault:#FF6373;
+  --go-soft:#12312A; --warn-soft:#33280F; --fault-soft:#36191F;
+  --sheet:#12161D; --grid:#212734;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--body); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh; display:flex; flex-direction:column;
+}
+h1,h2,h3,h4{font-family:var(--display); font-variation-settings:"wdth" 116; margin:0; text-wrap:balance; letter-spacing:-.01em}
+p{margin:0}
+button,input,select{font:inherit; color:inherit}
+input[type="checkbox"]{accent-color:var(--track); width:14px; height:14px}
+:focus-visible{outline:2px solid var(--track); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important; transition-duration:.01ms !important}}
+
+.eyebrow{
+  font-family:var(--mono); font-size:10.5px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
+}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ---------- top rail ---------- */
+.rail{
+  position:sticky; top:0; z-index:30;
+  background:var(--panel); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  padding:10px 22px;
+}
+.brand{display:flex; align-items:center; gap:11px; flex:0 0 auto}
+.brand .mark{
+  width:30px; height:30px; flex:0 0 auto;
+  background:var(--track); border-radius:2px;
+  display:grid; place-items:center;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.22);
+}
+.brand .mark svg{display:block}
+.brand b{
+  font-family:var(--display); font-weight:800; font-variation-settings:"wdth" 122;
+  font-size:16px; letter-spacing:.005em; text-transform:uppercase;
+}
+.brand small{display:block; font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase; margin-top:-2px}
+
+.stepper{display:flex; align-items:stretch; gap:2px; margin-left:auto; flex-wrap:wrap}
+.stepper button{
+  background:none; border:0; cursor:pointer;
+  display:flex; align-items:center; gap:8px;
+  padding:6px 13px 6px 9px; border-radius:3px;
+  color:var(--ink-3); position:relative;
+}
+.stepper button:hover:not(:disabled){color:var(--ink-2); background:var(--panel-2)}
+.stepper button:disabled{cursor:not-allowed; opacity:.45}
+.stepper button .idx{
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  width:20px; height:20px; border-radius:2px; display:grid; place-items:center;
+  border:1px solid var(--line-2); background:var(--panel-2); color:var(--ink-3);
+  transition:background .18s, color .18s, border-color .18s;
+}
+.stepper button .lbl{font-size:12.5px; font-weight:600; letter-spacing:.01em}
+.stepper button[aria-current="true"]{color:var(--ink)}
+.stepper button[aria-current="true"] .idx{background:var(--track); border-color:var(--track); color:#fff}
+.stepper button.done .idx{background:var(--track-soft); border-color:var(--track); color:var(--track)}
+@media (max-width:760px){ .stepper button .lbl{display:none} .stepper{margin-left:0} }
+
+/* ---------- shell ---------- */
+main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
+.stage{display:none}
+.stage.on{display:block; animation:fade .35s ease both}
+@keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+.stage-head{margin-bottom:20px; max-width:62ch}
+.stage-head h2{font-size:27px; font-weight:800; margin:6px 0 6px}
+.stage-head p{color:var(--ink-2); font-size:14.5px}
+
+.split{display:grid; grid-template-columns:minmax(320px,392px) 1fr; gap:20px; align-items:start}
+@media (max-width:1080px){ .split{grid-template-columns:1fr} .split.plan-first > .col-b{order:-1} }
+
+.card{background:var(--panel); border:1px solid var(--line); border-radius:5px; box-shadow:var(--shadow)}
+.card > header{
+  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  padding:12px 16px; border-bottom:1px solid var(--line);
+}
+.card > header h3{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-variation-settings:"wdth" 110}
+.card > header .hint{font-size:12px; color:var(--ink-3); margin-left:auto}
+.card .body{padding:16px}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:1px solid var(--line-2); background:var(--panel-2); color:var(--ink);
+  border-radius:3px; padding:9px 16px; cursor:pointer; font-weight:600; font-size:13.5px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition:background .15s, border-color .15s, transform .08s;
+}
+.btn:hover:not(:disabled){background:var(--panel-3)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn.primary{background:var(--track); border-color:var(--track); color:#fff; box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.btn.primary:hover:not(:disabled){background:var(--ember); border-color:var(--ember)}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%}
+.actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
+</style>
+<style>
+/* ---------- set catalogue ---------- */
+.setgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:12px}
+.setcard{
+  position:relative; text-align:left; cursor:pointer;
+  background:var(--panel); border:1px solid var(--line); border-radius:5px;
+  padding:14px 15px 13px; display:flex; flex-direction:column; gap:7px;
+  transition:border-color .15s, background .15s;
+}
+.setcard:hover{border-color:var(--line-2)}
+.setcard[aria-pressed="true"]{border-color:var(--track); background:var(--panel)}
+.setcard[aria-pressed="true"]::before{
+  content:""; position:absolute; inset:-1px; border-radius:5px;
+  box-shadow:inset 0 0 0 1px var(--track); pointer-events:none;
+}
+.setcard .tick{
+  position:absolute; top:12px; right:12px; width:18px; height:18px; border-radius:2px;
+  border:1px solid var(--line-2); background:var(--panel-2);
+  display:grid; place-items:center; color:transparent; font-size:11px; font-weight:700;
+}
+.setcard[aria-pressed="true"] .tick{background:var(--track); border-color:var(--track); color:#fff}
+.setcard h4{font-size:14.5px; font-weight:700; padding-right:26px; font-variation-settings:"wdth" 108}
+.setcard .kind{font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--track)}
+.setcard .contents{font-size:12px; color:var(--ink-3); font-family:var(--mono); line-height:1.7}
+
+/* ---------- parts bin ---------- */
+.bin{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:10px}
+.part{
+  border:1px solid var(--line); border-radius:4px; background:var(--panel-2);
+  padding:10px 11px; display:flex; flex-direction:column; gap:8px;
+}
+.part.has{background:var(--panel); border-color:var(--line-2)}
+.part .top{display:flex; align-items:center; gap:9px}
+.part .glyph{width:34px; height:24px; flex:0 0 auto}
+.part .nm{font-size:12.5px; font-weight:600; line-height:1.25}
+.part .ab{font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--ink-3)}
+.stepbox{display:flex; align-items:center; gap:0; border:1px solid var(--line-2); border-radius:3px; overflow:hidden; background:var(--panel)}
+.stepbox button{
+  width:30px; height:28px; border:0; background:transparent; cursor:pointer;
+  color:var(--ink-2); font-size:15px; line-height:1; font-family:var(--mono);
+}
+.stepbox button:hover{background:var(--panel-3); color:var(--ink)}
+.stepbox input{
+  flex:1; min-width:0; width:100%; border:0; background:transparent; text-align:center;
+  font-family:var(--mono); font-size:14px; font-weight:700; font-variant-numeric:tabular-nums;
+  padding:0; -moz-appearance:textfield;
+}
+.stepbox input::-webkit-outer-spin-button,.stepbox input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.part .delta{font-family:var(--mono); font-size:10px; color:var(--track); letter-spacing:.04em}
+
+/* ---------- photo scan ---------- */
+.drop{
+  border:1.5px dashed var(--line-2); border-radius:5px; background:var(--panel-2);
+  padding:26px 18px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px;
+  transition:border-color .15s, background .15s; cursor:pointer;
+}
+.drop:hover,.drop.over{border-color:var(--track); background:var(--track-soft)}
+.drop h4{font-size:14px; font-weight:700}
+.drop p{font-size:12.5px; color:var(--ink-3); max-width:34ch}
+.shot{position:relative; border-radius:5px; overflow:hidden; border:1px solid var(--line); background:var(--panel-2)}
+.shot img{display:block; width:100%; max-height:280px; object-fit:contain; background:var(--panel-2)}
+.shot .clear{position:absolute; top:8px; right:8px; background:rgba(10,12,16,.72); color:#fff; border:0; border-radius:3px; padding:4px 9px; font-size:11.5px; font-weight:600; cursor:pointer; backdrop-filter:blur(4px)}
+.scanlog{
+  font-family:var(--mono); font-size:11.5px; line-height:1.65; color:var(--ink-2);
+  background:var(--panel-2); border:1px solid var(--line); border-radius:4px; padding:10px 12px;
+}
+.scanlog b{color:var(--ink)}
+.pulse{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--track); animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25; transform:scale(.7)} 50%{opacity:1; transform:scale(1)}}
+
+/* ---------- plan cards ---------- */
+.planlist{display:flex; flex-direction:column; gap:9px; max-height:none}
+.plancard{
+  text-align:left; cursor:pointer; width:100%;
+  background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:12px 14px;
+  display:flex; flex-direction:column; gap:7px; transition:border-color .15s;
+}
+.plancard:hover{border-color:var(--line-2)}
+.plancard[aria-pressed="true"]{border-color:var(--track); box-shadow:inset 0 0 0 1px var(--track)}
+.plancard .r1{display:flex; align-items:baseline; gap:9px}
+.plancard h4{font-size:14.5px; font-weight:700; font-variation-settings:"wdth" 108}
+.plancard .tag{
+  margin-left:auto; font-family:var(--mono); font-size:9.5px; letter-spacing:.1em;
+  text-transform:uppercase; padding:2px 6px; border-radius:2px; white-space:nowrap;
+}
+.tag.dual{background:var(--track-soft); color:var(--ember)}
+.tag.single{background:var(--panel-3); color:var(--ink-3)}
+.plancard .desc{display:block; font-size:12.5px; color:var(--ink-2); line-height:1.5}
+.plancard .meta{display:flex; gap:12px; flex-wrap:wrap; font-family:var(--mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.03em}
+.bar{height:3px; border-radius:2px; background:var(--panel-3); overflow:hidden}
+.bar i{display:block; height:100%; background:var(--track); border-radius:2px; transition:width .4s ease}
+.plancard.short{opacity:.62}
+.plancard.short .bar i{background:var(--ink-3)}
+.missing{font-family:var(--mono); font-size:10.5px; color:var(--fault); letter-spacing:.02em}
+
+/* ---------- drafting sheet ---------- */
+.sheet{
+  background:var(--sheet); border:1px solid var(--line); border-radius:5px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.sheet .plate{width:100%; display:block; overflow-x:auto}
+.sheet .profile{border-top:1px solid var(--line)}
+.sheet .profile svg{max-height:none}
+.sheet svg{display:block; width:100%; height:auto; max-height:min(62vh,620px)}
+.seg{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.seg-shadow{stroke:rgba(0,0,0,.16); stroke-width:5.6; fill:none; stroke-linecap:round}
+.seg-base{stroke:var(--ember); stroke-width:5.2}
+.seg-face{stroke:var(--track); stroke-width:3.4}
+.seg.air{stroke:var(--draft); opacity:.9}
+.seg.ghost{opacity:.13}
+.seg.new{stroke-dasharray:1 1; animation:draw .5s cubic-bezier(.4,0,.2,1) both}
+@keyframes draw{from{stroke-dashoffset:1} to{stroke-dashoffset:0}}
+.seg-halo{stroke:var(--track); stroke-width:9; fill:none; opacity:.2; stroke-linecap:round}
+.seg-future{stroke:var(--ink-3); stroke-width:3.4; fill:none; opacity:.16; stroke-linecap:round; stroke-dasharray:3 5}
+.dimline{stroke:var(--draft); opacity:.7}
+.dimtext{fill:var(--draft); font-family:var(--mono); letter-spacing:.04em}
+.gridline{stroke:var(--grid)}
+.glyphlbl{fill:var(--ink-3); font-family:var(--mono); letter-spacing:.08em}
+.tb{fill:var(--ink-3); font-family:var(--mono); letter-spacing:.1em}
+.tb.k{fill:var(--ink); font-weight:700}
+.marker{font-family:var(--display); font-weight:800; letter-spacing:.06em}
+
+.readout{display:grid; grid-template-columns:repeat(auto-fit,minmax(112px,1fr)); border-top:1px solid var(--line)}
+.readout div{padding:11px 14px; border-right:1px solid var(--line)}
+.readout div:last-child{border-right:0}
+.readout .k{font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
+.readout .v{font-family:var(--mono); font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.3}
+.readout .v small{font-size:11px; font-weight:500; color:var(--ink-3); margin-left:2px}
+
+/* ---------- checks ---------- */
+.checks{display:flex; flex-direction:column; gap:7px}
+.check{display:flex; gap:10px; align-items:flex-start; padding:9px 11px; border-radius:4px; border:1px solid var(--line); background:var(--panel-2)}
+.check .pill{
+  font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.1em;
+  padding:3px 6px; border-radius:2px; flex:0 0 auto; margin-top:1px;
+}
+.check.pass{border-color:color-mix(in srgb,var(--go) 34%,var(--line)); background:var(--go-soft)}
+.check.pass .pill{background:var(--go); color:var(--panel)}
+.check.marginal{border-color:color-mix(in srgb,var(--warn) 34%,var(--line)); background:var(--warn-soft)}
+.check.marginal .pill{background:var(--warn); color:var(--panel)}
+.check.fail{border-color:color-mix(in srgb,var(--fault) 34%,var(--line)); background:var(--fault-soft)}
+.check.fail .pill{background:var(--fault); color:var(--panel)}
+.check .txt{font-size:12.5px; line-height:1.5}
+.check .txt b{font-weight:600}
+.check .txt em{font-style:normal; font-family:var(--mono); font-size:11.5px; color:var(--ink-2)}
+
+/* ---------- build steps ---------- */
+.steplist{position:relative; display:flex; flex-direction:column; gap:0; max-height:min(58vh,560px); overflow-y:auto}
+@media (max-width:1080px){
+  #s3 .col-b{position:sticky; top:var(--rail,56px); z-index:12; background:var(--ground); padding-bottom:10px}
+  #s3 .sheet svg{max-height:30vh}
+  #s3 .profile{display:none}
+  #s3 .readout{display:none}
+  .steplist{max-height:none}
+}
+.stepitem{
+  display:flex; gap:12px; padding:12px 14px; border-bottom:1px solid var(--line);
+  cursor:pointer; text-align:left; background:none; border-left:0; border-right:0; border-top:0; width:100%;
+  transition:background .15s;
+}
+.stepitem:hover{background:var(--panel-2)}
+.stepitem .no{
+  font-family:var(--mono); font-size:11px; font-weight:700; flex:0 0 auto;
+  width:22px; height:22px; border-radius:2px; display:grid; place-items:center;
+  border:1px solid var(--line-2); color:var(--ink-3); background:var(--panel-2);
+}
+.stepitem.done .no{background:var(--track-soft); border-color:var(--track); color:var(--track)}
+.stepitem[aria-current="true"]{background:var(--panel-2)}
+.stepitem[aria-current="true"] .no{background:var(--track); border-color:var(--track); color:#fff}
+.stepitem .t{display:block; font-size:13.5px; font-weight:600; line-height:1.35}
+.stepitem .d{display:block; font-size:12.5px; color:var(--ink-2); line-height:1.5; margin-top:3px}
+.stepitem .use{display:block; font-family:var(--mono); font-size:10.5px; color:var(--track); letter-spacing:.04em; margin-top:6px}
+.stepitem .tip{
+  display:block; font-size:12px; color:var(--ink-2); margin-top:8px; padding:7px 9px;
+  border-left:2px solid var(--draft); background:var(--panel-2); border-radius:0 3px 3px 0;
+}
+.stepitem[aria-current="true"] .tip{background:var(--panel-3)}
+
+.navbar{display:flex; align-items:center; gap:12px; padding:12px 14px; border-top:1px solid var(--line); background:var(--panel-2)}
+.navbar .prog{flex:1; min-width:60px}
+.navbar .cnt{font-family:var(--mono); font-size:12px; font-variant-numeric:tabular-nums; color:var(--ink-3); white-space:nowrap}
+
+.note{font-size:12.5px; color:var(--ink-3); line-height:1.55}
+.note a{color:var(--track)}
+.empty{padding:34px 20px; text-align:center; color:var(--ink-3); font-size:13.5px}
+.chip{
+  display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10.5px;
+  letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:2px;
+  background:var(--panel-3); color:var(--ink-2);
+}
+.foot{padding:18px 22px 30px; max-width:1560px; margin:0 auto; width:100%; color:var(--ink-3); font-size:12px; line-height:1.6}
+.foot b{color:var(--ink-2); font-weight:600}
+</style>
+
+<header class="rail">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+        <path d="M2 17c4-11 16-11 20 0" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="12" cy="19.5" r="2.4" fill="#fff"/>
+      </svg>
+    </span>
+    <span><b>Orange Track Lab</b><small>Track Builder · Design Office</small></span>
+  </div>
+  <nav class="stepper" aria-label="Build stages">
+    <button data-go="0"><span class="idx">1</span><span class="lbl">Your sets</span></button>
+    <button data-go="1"><span class="idx">2</span><span class="lbl">Your pieces</span></button>
+    <button data-go="2"><span class="idx">3</span><span class="lbl">Layouts</span></button>
+    <button data-go="3"><span class="idx">4</span><span class="lbl">Build guide</span></button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============ 1 · SETS ============ -->
+<section class="stage" id="s0" aria-labelledby="s0h">
+  <div class="stage-head">
+    <span class="eyebrow">Stage 1 of 4</span>
+    <h2 id="s0h">Which sets are in the toy box?</h2>
+    <p>Tick everything you own. Each set drops its pieces into your parts bin — you can correct the counts in the next stage, and a photo will do most of that for you.</p>
+  </div>
+  <div class="setgrid" id="setgrid"></div>
+  <div class="actions">
+    <button class="btn primary" data-go="1">Next — count the pieces</button>
+    <button class="btn ghost" id="skip-sets">Skip, I'll just photograph the pile</button>
+    <button class="btn ghost" id="clear-sets">Clear selection</button>
+  </div>
+</section>
+
+<!-- ============ 2 · PIECES ============ -->
+<section class="stage" id="s1" aria-labelledby="s1h">
+  <div class="stage-head">
+    <span class="eyebrow">Stage 2 of 4</span>
+    <h2 id="s1h">What's actually on the floor?</h2>
+    <p>Box contents and reality drift apart fast. Spread the pieces out on a plain floor, take one photo, and let the scan tally them — then nudge anything it got wrong.</p>
+  </div>
+  <div class="split">
+    <div class="col-a" style="display:flex; flex-direction:column; gap:16px">
+      <div class="card">
+        <header><h3>Photo scan</h3><span class="hint" id="scan-avail"></span></header>
+        <div class="body" style="display:flex; flex-direction:column; gap:12px">
+          <div id="shot-slot"></div>
+          <input type="file" id="file" accept="image/*" hidden>
+          <input type="file" id="cam" accept="image/*" capture="environment" hidden>
+          <div style="display:flex; gap:8px">
+            <button class="btn wide" id="btn-cam">Take photo</button>
+            <button class="btn wide" id="btn-file">Choose file</button>
+          </div>
+          <button class="btn primary wide" id="btn-scan" disabled>Scan the pile</button>
+          <div id="scan-out"></div>
+        </div>
+      </div>
+      <div class="card">
+        <header><h3>Bin summary</h3></header>
+        <div class="body" id="bin-summary"></div>
+      </div>
+    </div>
+    <div class="col-b">
+      <div class="card">
+        <header>
+          <h3>Parts bin</h3>
+          <span class="hint">Counts are yours to edit — nothing here is locked</span>
+        </header>
+        <div class="body"><div class="bin" id="bin"></div></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" data-go="2">Next — see what I can build</button>
+        <button class="btn ghost" id="zero-bin">Empty the bin</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 · LAYOUTS ============ -->
+<section class="stage" id="s2" aria-labelledby="s2h">
+  <div class="stage-head">
+    <span class="eyebrow">Stage 3 of 4</span>
+    <h2 id="s2h">Layouts your bin can actually build</h2>
+    <p>Every plan below is drawn to scale from your piece counts, then run through an energy check — so a loop that your drop height can't clear gets flagged before you spend an afternoon on it.</p>
+  </div>
+  <div class="split">
+    <div class="col-a" style="display:flex; flex-direction:column; gap:16px">
+      <div class="card">
+        <header>
+          <h3>Candidates</h3>
+          <span class="hint"><label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="only-buildable" checked> buildable only</label></span>
+        </header>
+        <div class="planlist" id="planlist" style="padding:12px"></div>
+      </div>
+    </div>
+    <div class="col-b" style="display:flex; flex-direction:column; gap:16px">
+      <div class="sheet">
+        <div class="plate" id="plan-plate"></div>
+        <div class="readout" id="plan-readout"></div>
+      </div>
+      <div class="split" style="grid-template-columns:1fr 1fr; align-items:start">
+        <div class="card">
+          <header><h3>Engineering check</h3></header>
+          <div class="body"><div class="checks" id="plan-checks"></div></div>
+        </div>
+        <div class="card">
+          <header><h3>Kit list</h3></header>
+          <div class="body" id="plan-kit"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="btn-build" disabled>Open the build guide</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · BUILD ============ -->
+<section class="stage" id="s3" aria-labelledby="s3h">
+  <div class="stage-head">
+    <span class="eyebrow">Stage 4 of 4</span>
+    <h2 id="s3h" style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><span id="build-title">Build guide</span> <span class="chip" id="build-chip"></span></h2>
+    <p id="build-sub"></p>
+  </div>
+  <div class="split plan-first">
+    <div class="col-a">
+      <div class="card">
+        <header><h3>Steps</h3><span class="hint">← → to move</span></header>
+        <div class="steplist" id="steplist"></div>
+        <div class="navbar">
+          <button class="btn" id="prev">Back</button>
+          <div class="prog"><div class="bar"><i id="progbar" style="width:0%"></i></div></div>
+          <span class="cnt" id="stepcount">0 / 0</span>
+          <button class="btn primary" id="next">Next</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-b" style="display:flex; flex-direction:column; gap:16px">
+      <div class="sheet">
+        <div class="plate" id="build-plate"></div>
+        <div class="readout" id="build-readout"></div>
+      </div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn ghost" data-go="2">Pick a different layout</button>
+    <button class="btn ghost" id="restart">Start the build over</button>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <b>On accuracy:</b> set contents are editable starting estimates, not a manufacturer parts list — confirm them against your own boxes in stage 2. Speeds and clearances come from a rolling-resistance model (µ≈0.06 on clean plastic track); real cars vary with wheel wear and dust, so treat every margin under 15% as "test it before you commit".
+  <b>Not affiliated with Mattel.</b> Hot Wheels and Track Builder are trademarks of Mattel, Inc.
+</footer>
+
+<script>
+"use strict";
+
+/* ============================================================
+   PIECE TAXONOMY
+   ============================================================ */
+const PIECES = {
+  straight : {nm:"Straight track",      ab:"STR",  len:34},
+  curve    : {nm:"Curve / bend",        ab:"CRV",  len:26},
+  loop     : {nm:"Loop kit",            ab:"LOOP"},
+  corkscrew: {nm:"Corkscrew twist",     ab:"CORK"},
+  jump     : {nm:"Jump ramp",           ab:"JUMP"},
+  crossover: {nm:"Criss-cross piece",   ab:"XING"},
+  splitter : {nm:"Splitter / merge",    ab:"SPLT"},
+  launcher : {nm:"Launcher",            ab:"LNCH"},
+  booster  : {nm:"Motorised booster",   ab:"BOOST"},
+  connector: {nm:"Track connector",     ab:"CONN"},
+  clamp    : {nm:"Track clamp",         ab:"CLMP"},
+  support  : {nm:"Support column",      ab:"SUPP"},
+  gate     : {nm:"Start / finish gate", ab:"GATE"}
+};
+const PKEYS = Object.keys(PIECES);
+
+const GLYPH = {
+  straight :'<rect x="3" y="9" width="28" height="6" rx="1"/>',
+  curve    :'<path d="M4 19a16 16 0 0 1 26-11" fill="none" stroke-width="6" stroke-linecap="round"/>',
+  loop     :'<circle cx="17" cy="12" r="7.5" fill="none" stroke-width="4"/><path d="M2 19h6M26 19h6" stroke-width="4" stroke-linecap="round"/>',
+  corkscrew:'<path d="M4 16c5-10 5 6 10-4s5 6 10-4" fill="none" stroke-width="4.5" stroke-linecap="round"/>',
+  jump     :'<path d="M3 18h9l8-11" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 19h7" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 4"/>',
+  crossover:'<path d="M4 5l26 14M30 5L4 19" fill="none" stroke-width="5" stroke-linecap="round"/>',
+  splitter :'<path d="M3 12h12l14-7M15 12l14 7" fill="none" stroke-width="4.5" stroke-linecap="round"/>',
+  launcher :'<rect x="3" y="7" width="10" height="10" rx="1.5"/><path d="M14 12h16" stroke-width="5" stroke-linecap="round"/>',
+  booster  :'<rect x="8" y="6" width="18" height="12" rx="2"/><path d="M12 12h10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>',
+  connector:'<rect x="9" y="8" width="16" height="8" rx="1.5"/><path d="M3 12h6M25 12h6" stroke-width="3.5"/>',
+  clamp    :'<path d="M6 4v16h9" fill="none" stroke-width="4" stroke-linejoin="round"/><rect x="13" y="14" width="14" height="6" rx="1.5"/>',
+  support  :'<path d="M17 21V5" stroke-width="4.5"/><path d="M8 21h18M9 5h16" stroke-width="4" stroke-linecap="round"/>',
+  gate     :'<path d="M5 20V5h24v15" fill="none" stroke-width="4" stroke-linejoin="round"/><path d="M5 11h24" stroke-width="3" stroke-dasharray="3 3"/>'
+};
+function glyph(k){
+  return '<svg class="glyph" viewBox="0 0 34 24" fill="currentColor" stroke="currentColor" aria-hidden="true" style="color:var(--track)">'+(GLYPH[k]||"")+'</svg>';
+}
+
+/* ============================================================
+   SET CATALOGUE — editable starting estimates, confirmed in stage 2
+   ============================================================ */
+const SETS = [
+  {id:"basic",   nm:"Basic Track Pack",                  kind:"Track pack",     p:{straight:10,connector:8,clamp:2}},
+  {id:"curves",  nm:"Curve Pack",                        kind:"Track pack",     p:{curve:8,connector:6}},
+  {id:"stunt",   nm:"Track Builder Unlimited: Stunt Box",kind:"Builder set",    p:{straight:6,curve:2,launcher:1,jump:1,connector:6,clamp:2,support:2}},
+  {id:"triple",  nm:"Unlimited: Triple Loop Kit",        kind:"Stunt kit",      p:{loop:3,straight:4,connector:6,support:3,clamp:1}},
+  {id:"cork",    nm:"Unlimited: Corkscrew Twist",        kind:"Stunt kit",      p:{corkscrew:1,booster:1,straight:4,connector:4,support:2,clamp:1}},
+  {id:"foldup",  nm:"Unlimited: Fold Up Race",           kind:"Race set",       p:{straight:6,curve:2,launcher:1,gate:1,connector:5,clamp:2}},
+  {id:"vlaunch", nm:"Unlimited: Vertical Launch Kit",    kind:"Stunt kit",      p:{launcher:1,straight:4,support:3,connector:4,clamp:2}},
+  {id:"crate",   nm:"Track Builder Race Crate",          kind:"Mega set",       p:{straight:10,curve:4,loop:1,jump:1,launcher:1,connector:10,clamp:2,support:4,gate:1}},
+  {id:"criss",   nm:"Criss Cross Crash",                 kind:"Playset",        p:{crossover:2,booster:2,straight:6,curve:4,connector:6,support:3}},
+  {id:"garage",  nm:"Ultimate / Mega Garage",            kind:"Playset",        p:{straight:6,curve:2,splitter:1,gate:1,connector:4,support:2,booster:1}},
+  {id:"boost",   nm:"Booster Pack (2-pack)",             kind:"Accessory",      p:{booster:2,straight:2,connector:2}},
+  {id:"kicker",  nm:"Loop Kicker Pack",                  kind:"Stunt kit",      p:{loop:1,launcher:1,straight:2,connector:3,support:2}},
+  {id:"junction",nm:"Split Speeders Junction Pack",      kind:"Accessory",      p:{splitter:2,straight:4,connector:4}}
+];
+
+/* ============================================================
+   LAYOUT LIBRARY
+   Segment turtle: cm, top-down. heading 0 = +x, +deg = right turn.
+   ============================================================ */
+const LAYOUTS = [
+{ id:"sprint", nm:"Bench Drop Sprint", cls:"dual", skill:"Beginner",
+  blurb:"Two lanes off the same table edge, straight down to a floor-level finish. The purest race there is — and the layout that teaches you to clamp properly.",
+  lanes:[
+    {name:"Lane A", origin:{x:0,y:0,hdg:0,z:66}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Table-edge drop"},
+      {t:"str",len:34,drop:22,label:"Descent"},
+      {t:"str",len:34,drop:14,label:"Floor transition"},
+      {t:"str",len:68,drop:6,label:"Sprint straight"}]},
+    {name:"Lane B", origin:{x:0,y:22,hdg:0,z:66}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Table-edge drop"},
+      {t:"str",len:34,drop:22,label:"Descent"},
+      {t:"str",len:34,drop:14,label:"Floor transition"},
+      {t:"str",len:68,drop:6,label:"Sprint straight"}]}
+  ],
+  notes:["Release both cars with a single ruler laid across the two start points — a hand-drop introduces more error than the track ever will."]},
+
+{ id:"gauntlet", nm:"Loop Gauntlet", cls:"single", skill:"Beginner",
+  blurb:"The classic: a long drop feeding a vertical loop, then a sweeping right-hander into the run-out. The whole layout is really one question — is the drop tall enough?",
+  lanes:[
+    {name:"Main line", origin:{x:0,y:0,hdg:0,z:95}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Drop-in"},
+      {t:"str",len:34,drop:24,label:"Acceleration ramp"},
+      {t:"str",len:68,drop:34,label:"Run-in"},
+      {t:"loop",r:18,label:"Vertical loop"},
+      {t:"str",len:34,drop:6,label:"Recovery straight"},
+      {t:"arc",r:45,deg:90,drop:3,label:"Sweeping right-hander"},
+      {t:"str",len:68,drop:4,label:"Finish straight"}]}
+  ],
+  notes:["Loop entry is where cars die. The last straight before the loop must be dead flat and dead straight for at least 30 cm."]},
+
+{ id:"twinloop", nm:"Twin Loop Duel", cls:"dual", skill:"Intermediate",
+  blurb:"Two mirrored lanes, a loop each, racing side by side. Both cars have to survive the same physics at the same moment — which is far more dramatic than it sounds.",
+  lanes:[
+    {name:"Lane A", origin:{x:0,y:0,hdg:0,z:82}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Drop-in"},
+      {t:"str",len:34,drop:24,label:"Acceleration ramp"},
+      {t:"str",len:34,drop:22,label:"Run-in"},
+      {t:"loop",r:15,label:"Vertical loop"},
+      {t:"str",len:34,drop:8,label:"Recovery straight"},
+      {t:"str",len:68,drop:4,label:"Finish straight"}]},
+    {name:"Lane B", origin:{x:0,y:34,hdg:0,z:82}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Drop-in"},
+      {t:"str",len:34,drop:24,label:"Acceleration ramp"},
+      {t:"str",len:34,drop:22,label:"Run-in"},
+      {t:"loop",r:15,label:"Vertical loop"},
+      {t:"str",len:34,drop:8,label:"Recovery straight"},
+      {t:"str",len:68,drop:4,label:"Finish straight"}]}
+  ],
+  notes:["Set the two loops at identical heights with a tape measure, not by eye. A 2 cm difference in loop apex is worth about a car length at the finish."]},
+
+{ id:"crisscross", nm:"Criss-Cross Duel", cls:"dual", skill:"Intermediate", interlock:true,
+  blurb:"Two lanes converge, share one criss-cross piece, then fan back out. Near-misses at the intersection are the whole point — stagger the starts and they become collisions.",
+  lanes:[
+    {name:"Lane A", origin:{x:0,y:0,hdg:20,z:61}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:23,label:"Drop-in"},
+      {t:"str",len:34,drop:22,label:"Converging ramp"},
+      {t:"cross",label:"Criss-cross intersection"},
+      {t:"str",len:34,drop:8,label:"Exit straight"},
+      {t:"arc",r:60,deg:-20,drop:4,label:"Straighten out"},
+      {t:"str",len:68,drop:4,label:"Finish straight"}]},
+    {name:"Lane B", origin:{x:0,y:96,hdg:-20,z:61}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:23,label:"Drop-in"},
+      {t:"str",len:34,drop:22,label:"Converging ramp"},
+      {t:"cross",shared:true,label:"Criss-cross intersection"},
+      {t:"str",len:34,drop:8,label:"Exit straight"},
+      {t:"arc",r:60,deg:20,drop:4,label:"Straighten out"},
+      {t:"str",len:68,drop:4,label:"Finish straight"}]}
+  ],
+  notes:["The crossing piece is shared — build lane A completely, then bring lane B in to meet it rather than building both halfway."]},
+
+{ id:"corkrun", nm:"Corkscrew Descent", cls:"single", skill:"Intermediate",
+  blurb:"A tall drop into a corkscrew, out through a banked right-hander and away. The corkscrew is a speed tax — this layout exists to prove you budgeted for it.",
+  lanes:[
+    {name:"Main line", origin:{x:0,y:0,hdg:0,z:84}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Drop-in"},
+      {t:"str",len:34,drop:23,label:"Acceleration ramp"},
+      {t:"cork",len:40,drop:22,label:"Corkscrew twist"},
+      {t:"arc",r:45,deg:90,drop:6,label:"Banked right-hander"},
+      {t:"str",len:34,drop:5,label:"Exit straight"},
+      {t:"str",len:68,drop:4,label:"Finish straight"}]}
+  ],
+  notes:["Corkscrews shed roughly a tenth of the car's energy. If the exit feels sluggish, add height at the top rather than shortening the run-out."]},
+
+{ id:"hairpin", nm:"Hairpin Staircase", cls:"single", skill:"Advanced",
+  blurb:"A switchback descent that folds a long run into a small footprint. Built for flats and hallways where you have height but no floor.",
+  lanes:[
+    {name:"Main line", origin:{x:0,y:0,hdg:0,z:99}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:23,label:"Top ramp"},
+      {t:"arc",r:34,deg:180,drop:24,label:"First hairpin"},
+      {t:"str",len:34,drop:22,label:"Middle descent"},
+      {t:"arc",r:34,deg:-180,drop:22,label:"Second hairpin"},
+      {t:"str",len:68,drop:8,label:"Run-out"}]}
+  ],
+  notes:["Support every hairpin at both ends. An unsupported 180° bend twists under load and throws cars over the outside wall."]},
+
+{ id:"split", nm:"Split Decision", cls:"dual", skill:"Advanced",
+  blurb:"One feed ramp, then a splitter sends two cars down mirror-image branches. Because both lanes are fed by the same drop, it is the fairest race you can build.",
+  lanes:[
+    {name:"Shared feed", origin:{x:0,y:0,hdg:0,z:63}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Feed ramp"},
+      {t:"str",len:34,drop:22,label:"Second feed ramp"},
+      {t:"split",label:"Splitter"}]},
+    {name:"Left branch", pinTo:0, segs:[
+      {t:"arc",r:50,deg:-20,drop:6,label:"Peel left"},
+      {t:"str",len:68,drop:6,label:"Left straight"},
+      {t:"arc",r:50,deg:20,drop:3,label:"Straighten"},
+      {t:"str",len:34,drop:2,label:"Left finish"}]},
+    {name:"Right branch", pinTo:0, segs:[
+      {t:"arc",r:50,deg:20,drop:6,label:"Peel right"},
+      {t:"str",len:68,drop:6,label:"Right straight"},
+      {t:"arc",r:50,deg:-20,drop:3,label:"Straighten"},
+      {t:"str",len:34,drop:2,label:"Right finish"}]}
+  ],
+  notes:["Both cars must be dropped into the feed simultaneously. A two-car release gate at the top is worth building even if you improvise one from a ruler."]},
+
+{ id:"canyon", nm:"Canyon Jump Line", cls:"single", skill:"Intermediate",
+  blurb:"Drop, accelerate, launch across an open gap and land clean. The landing ramp position is calculated from your entry speed, not guessed.",
+  lanes:[
+    {name:"Main line", origin:{x:0,y:0,hdg:0,z:65}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Drop-in"},
+      {t:"str",len:34,drop:23,label:"Acceleration ramp"},
+      {t:"str",len:34,drop:10,label:"Approach"},
+      {t:"jump",gap:55,rise:14,label:"Launch ramp & air gap"},
+      {t:"str",len:34,drop:4,label:"Landing run"},
+      {t:"str",len:68,drop:4,label:"Run-out"}]}
+  ],
+  notes:["Mark the calculated landing point on the floor with tape before you place the ramp. Move the ramp, never the launcher."]},
+
+{ id:"gpoval", nm:"Grand Prix Oval", cls:"dual", skill:"Advanced", closed:true,
+  blurb:"A two-lane booster-driven oval that runs continuously — lap racing rather than one-shot drag racing. The outer lane is longer, so the app works out the stagger for you.",
+  lanes:[
+    {name:"Inside lane", origin:{x:0,y:0,hdg:0,z:0}, start:{kind:"booster",mount:"floor"}, closed:true, segs:[
+      {t:"str",len:102,drop:0,label:"Front straight"},
+      {t:"arc",r:45,deg:180,drop:0,label:"Turns 1-2"},
+      {t:"str",len:102,drop:0,label:"Back straight"},
+      {t:"arc",r:45,deg:180,drop:0,label:"Turns 3-4"}]},
+    {name:"Outside lane", origin:{x:0,y:-18,hdg:0,z:0}, start:{kind:"booster",mount:"floor"}, closed:true, segs:[
+      {t:"str",len:102,drop:0,label:"Front straight"},
+      {t:"arc",r:63,deg:180,drop:0,label:"Turns 1-2"},
+      {t:"str",len:102,drop:0,label:"Back straight"},
+      {t:"arc",r:63,deg:180,drop:0,label:"Turns 3-4"}]}
+  ],
+  notes:["Boosters must be fed by a flat approach or the wheels slip. Tape the booster feet to the floor — they walk under repeated hits."]}
+];
+
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   GEOMETRY ENGINE — turtle walk over segments
+   ============================================================ */
+const RAD = Math.PI/180;
+const STRAIGHT_CM = 34, CURVE_DEG = 45;
+
+function rot(p,c,deg){
+  const a=deg*RAD, dx=p.x-c.x, dy=p.y-c.y;
+  return {x:c.x+dx*Math.cos(a)-dy*Math.sin(a), y:c.y+dx*Math.sin(a)+dy*Math.cos(a)};
+}
+function fwd(p,hdg,d){ return {x:p.x+Math.cos(hdg*RAD)*d, y:p.y+Math.sin(hdg*RAD)*d}; }
+const f1 = n => (Math.round(n*10)/10).toString();
+
+function arcPath(p0,c,deg,r,end){
+  // split into <=90 deg chunks so SVG arcs stay well-conditioned
+  const n = Math.max(1, Math.ceil(Math.abs(deg)/90)), step = deg/n;
+  let d = "", cur = p0;
+  for(let i=0;i<n;i++){
+    const nx = (i===n-1) ? end : rot(cur,c,step);
+    d += ` A ${f1(r)} ${f1(r)} 0 0 ${step>0?1:0} ${f1(nx.x)} ${f1(nx.y)}`;
+    cur = nx;
+  }
+  return d;
+}
+function arcPoly(p0,c,deg,steps){
+  const out=[]; for(let i=1;i<=steps;i++) out.push(rot(p0,c,deg*i/steps)); return out;
+}
+
+/* Walk one lane's segments from a starting pose. */
+function walkLane(lane, pose){
+  let p = {x:pose.x, y:pose.y}, hdg = pose.hdg, z = pose.z;
+  const nodes = [];
+  for(const s of lane.segs){
+    const n = {seg:s, from:{...p}, hdgIn:hdg, zIn:z, poly:[{...p}], glyphs:[]};
+    if(s.t==="str"){
+      const end = fwd(p,hdg,s.len);
+      n.d = `M ${f1(p.x)} ${f1(p.y)} L ${f1(end.x)} ${f1(end.y)}`;
+      n.poly.push(end); n.run = s.len; z -= (s.drop||0); p = end;
+    }
+    else if(s.t==="arc"){
+      const sign = s.deg>0?1:-1;
+      const c = fwd(p, hdg+90*sign, s.r);
+      const end = rot(p,c,s.deg);
+      n.d = `M ${f1(p.x)} ${f1(p.y)}` + arcPath(p,c,s.deg,s.r,end);
+      n.poly = n.poly.concat(arcPoly(p,c,s.deg,Math.max(6,Math.ceil(Math.abs(s.deg)/12))));
+      n.run = Math.abs(s.deg)*RAD*s.r; z -= (s.drop||0); hdg += s.deg; p = end;
+    }
+    else if(s.t==="loop"){
+      const end = fwd(p,hdg,s.r*2);
+      n.d = `M ${f1(p.x)} ${f1(p.y)} L ${f1(end.x)} ${f1(end.y)}`;
+      n.poly.push(end); n.run = s.r*2*1.4;
+      const mid = fwd(p,hdg,s.r), cc = fwd(mid, hdg-90, s.r*1.15);
+      n.glyphs.push({kind:"loop", x:cc.x, y:cc.y, r:s.r*0.78, from:mid, txt:`LOOP ⌀${Math.round(s.r*2)}`});
+      p = end;
+    }
+    else if(s.t==="cork"){
+      const pts=[{...p}], N=26;
+      for(let i=1;i<=N;i++){
+        const along = fwd(p,hdg,s.len*i/N);
+        const off = Math.sin(i/N*Math.PI*3)*7;
+        pts.push(fwd(along, hdg-90, off));
+      }
+      n.d = "M " + pts.map(q=>`${f1(q.x)} ${f1(q.y)}`).join(" L ");
+      n.poly = pts; n.run = s.len*1.25; z -= (s.drop||0);
+      const mid = fwd(p,hdg,s.len/2);
+      n.glyphs.push({kind:"tag", x:mid.x, y:mid.y-24, txt:"CORKSCREW"});
+      p = fwd(p,hdg,s.len);
+    }
+    else if(s.t==="jump"){
+      const end = fwd(p,hdg,s.gap);
+      n.d = `M ${f1(p.x)} ${f1(p.y)} L ${f1(end.x)} ${f1(end.y)}`;
+      n.air = true; n.poly.push(end); n.run = s.gap; z -= 0;
+      const mid = fwd(p,hdg,s.gap/2);
+      n.glyphs.push({kind:"tag", x:mid.x, y:mid.y-22, txt:`AIR ${s.gap} CM`});
+      p = end;
+    }
+    else if(s.t==="cross" || s.t==="split"){
+      n.d = ""; n.run = 0; n.zero = true;
+      n.glyphs.push({kind:s.t, x:p.x, y:p.y, hdg, txt:s.t==="cross"?"XING":"SPLIT"});
+    }
+    n.to = {...p}; n.hdgOut = hdg; n.zOut = z;
+    nodes.push(n);
+  }
+  return {nodes, end:{x:p.x, y:p.y, hdg, z}};
+}
+
+/* Walk a whole layout, pinning branch lanes and shared crossings. */
+function walkLayout(L){
+  const lanes = [];
+  L.lanes.forEach((lane,i)=>{
+    let pose;
+    if(lane.pinTo!=null) pose = {...lanes[lane.pinTo].end};
+    else pose = {...lane.origin};
+    let w = walkLane(lane, pose);
+    // interlocking layouts: slide this lane so its crossing meets the first lane's
+    if(L.interlock && i>0){
+      const mine = w.nodes.find(n=>n.seg.t==="cross");
+      const base = lanes[0] && lanes[0].nodes.find(n=>n.seg.t==="cross");
+      if(mine && base){
+        pose = {...pose, x:pose.x + (base.from.x-mine.from.x), y:pose.y + (base.from.y-mine.from.y)};
+        w = walkLane(lane, pose);
+      }
+    }
+    lanes.push({...w, name:lane.name, def:lane, pose});
+  });
+  // bounds
+  let xs=[], ys=[];
+  lanes.forEach(l=>l.nodes.forEach(n=>n.poly.forEach(q=>{xs.push(q.x); ys.push(q.y);})));
+  lanes.forEach(l=>l.nodes.forEach(n=>n.glyphs.forEach(g=>{
+    const rr=(g.r||14)+8; xs.push(g.x-rr,g.x+rr); ys.push(g.y-rr,g.y+rr);
+  })));
+  const bb = {x0:Math.min(...xs), x1:Math.max(...xs), y0:Math.min(...ys), y1:Math.max(...ys)};
+  return {lanes, bb, w:bb.x1-bb.x0, h:bb.y1-bb.y0};
+}
+
+/* ============================================================
+   PIECE REQUIREMENTS
+   ============================================================ */
+function segPieces(s){
+  switch(s.t){
+    case "str":  return {straight:Math.max(1,Math.round(s.len/STRAIGHT_CM))};
+    case "arc":  return {curve:Math.max(1,Math.round(Math.abs(s.deg)/CURVE_DEG))};
+    case "loop": return {loop:1};
+    case "cork": return {corkscrew:1};
+    case "jump": return {jump:1};
+    case "cross":return {crossover:1};
+    case "split":return {splitter:1};
+  }
+  return {};
+}
+function requirements(L){
+  const need = {};
+  const add = (k,n)=>{ if(n>0) need[k]=(need[k]||0)+n; };
+  let joints = 0;
+  L.lanes.forEach(lane=>{
+    let dz = 0, mounted = false;
+    lane.segs.forEach(s=>{
+      dz += (s.drop||0);
+      if(!s.shared){ const p=segPieces(s); for(const k in p) add(k,p[k]); }
+      if(!s.zero) joints++;
+    });
+    if(lane.start){
+      if(lane.start.kind==="launcher") add("launcher",1);
+      if(lane.start.kind==="booster")  add("booster",1);
+      if(lane.start.mount==="clamp"){ add("clamp",1); mounted = true; }
+    }
+    if(dz>40) add("support", Math.max(1, Math.round(dz/46) - (mounted?1:0)));
+  });
+  add("connector", Math.max(0, joints - L.lanes.length));
+  return need;
+}
+
+/* ============================================================
+   PHYSICS — mass cancels for gravity + rolling resistance,
+   so every number here holds for any Hot Wheels car in good order.
+   ============================================================ */
+const G = 9.81, MU = 0.06, LOOP_MARGIN = 1.35, JUMP_ANGLE = 24;
+const V_LAUNCHER = 4.2, V_BOOSTER = 5.0;
+
+function runLane(nodes, v2in){
+  let v2 = Math.max(0, v2in), t = 0, dist = 0, vmax = 0;
+  const events = [], profile = [];
+  let sCum = 0, z = nodes.length ? nodes[0].zIn : 0;
+  profile.push({s:0, z});
+  for(const n of nodes){
+    const s = n.seg;
+    const push = ()=>{ vmax = Math.max(vmax, Math.sqrt(Math.max(0,v2))); };
+    if(s.t==="str" || s.t==="arc" || s.t==="cork"){
+      const L = (n.run)/100, dz = (s.drop||0)/100;
+      const sinT = L>0 ? Math.min(.98, dz/L) : 0;
+      const cosT = Math.sqrt(Math.max(0,1-sinT*sinT));
+      const v1 = Math.sqrt(Math.max(0,v2));
+      let v2b = v2 + 2*(G*sinT - MU*G*cosT)*L;
+      if(s.t==="arc")  v2b *= (1 - 0.045*Math.abs(s.deg)/90);
+      if(s.t==="cork") v2b *= 0.90;
+      if(v2b <= 0.02){ events.push({type:"stall", at:s.label}); v2b = 0; }
+      const v2f = Math.sqrt(Math.max(0,v2b));
+      const vavg = Math.max(0.15,(v1+v2f)/2);
+      t += L/vavg; dist += n.run; v2 = v2b; z -= (s.drop||0); push();
+    }
+    else if(s.t==="loop"){
+      const r = s.r/100;
+      const need2 = 5*G*r*LOOP_MARGIN;
+      events.push({type:"loop", label:s.label, r:s.r,
+        vNeed:Math.sqrt(need2), vHave:Math.sqrt(Math.max(0,v2)),
+        margin: need2>0 ? (v2/need2 - 1) : 0});
+      const before = Math.sqrt(Math.max(0,v2));
+      v2 = v2 - 4*G*r - MU*G*(2*Math.PI*r)*0.5;
+      if(v2 < 0) v2 = 0;
+      const after = Math.sqrt(v2);
+      t += (2*Math.PI*r)/Math.max(0.2,(before+after)/2);
+      dist += n.run;
+    }
+    else if(s.t==="jump"){
+      const rise = (s.rise||0)/100, a = JUMP_ANGLE*RAD;
+      let v2b = v2 - 2*G*rise;
+      if(v2b < 0) v2b = 0;
+      const v = Math.sqrt(v2b);
+      const range = v*Math.cos(a) * (v*Math.sin(a) + Math.sqrt(v*v*Math.sin(a)*Math.sin(a) + 2*G*rise)) / G;
+      events.push({type:"jump", seg:s, label:s.label, gap:s.gap, range:range*100, v});
+      v2 = v2b*0.88;
+      t += (range||0.1)/Math.max(0.5,v); dist += n.run; push();
+    }
+    if(!n.zero){ sCum += n.run; profile.push({s:sCum, z:n.zOut}); }
+  }
+  return {v2, vExit:Math.sqrt(Math.max(0,v2)), t, dist, vmax, events, profile};
+}
+
+function analyse(L, geo){
+  const lanes = [];
+  geo.lanes.forEach((g,i)=>{
+    const def = g.def;
+    let v2 = 0;
+    if(def.pinTo!=null) v2 = lanes[def.pinTo].v2;
+    else if(def.start){
+      if(def.start.kind==="launcher") v2 = V_LAUNCHER*V_LAUNCHER;
+      if(def.start.kind==="booster")  v2 = V_BOOSTER*V_BOOSTER;
+    }
+    const r = runLane(g.nodes, v2);
+    // branches inherit the feed's distance and time, and their profile
+    // starts where the feed ends rather than back at zero
+    if(def.pinTo!=null){
+      const feed = lanes[def.pinTo];
+      r.profile = r.profile.map(q=>({s:q.s + feed.dist, z:q.z}));
+      r.dist += feed.dist; r.t += feed.t;
+    }
+    lanes.push({...r, name:g.name, def, isBranch:def.pinTo!=null});
+  });
+  const racing = lanes.filter(l=> l.def.pinTo!=null || !L.lanes.some(x=>x.pinTo===lanes.indexOf(l)));
+  const finishers = lanes.filter(l=> !L.lanes.some(x=>x.pinTo===lanes.indexOf(l)));
+  const totalDist = Math.max(...lanes.map(l=>l.dist));
+  const vmax = Math.max(...lanes.map(l=>l.vmax));
+  const runTime = Math.max(...finishers.map(l=>l.t));
+  const drop = Math.max(...geo.lanes.map(g=>{
+    const zs = g.nodes.map(n=>n.zIn).concat(g.nodes.map(n=>n.zOut));
+    return zs.length ? Math.max(...zs)-Math.min(...zs) : 0;
+  }));
+  const startH = Math.max(...geo.lanes.map(g=> g.nodes.length ? g.nodes[0].zIn : 0));
+  return {lanes, finishers, totalDist, vmax, runTime, drop, startH};
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   DRAFTING SHEET RENDERER
+   ============================================================ */
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function indexNodes(geo){
+  let gi = 0;
+  geo.lanes.forEach((l,li)=> l.nodes.forEach(n=>{ n.gi = gi++; n.li = li; }));
+  return gi;
+}
+
+function drawSheet(L, geo, opt){
+  opt = opt||{};
+  const pad = Math.max(30, Math.min(58, Math.max(geo.w, geo.h)*0.085));
+  const W = geo.w + pad*2;
+  const fs = W/78, hair = W/620, k = W/78;
+  const TB = fs*3.4;                             // title-block band, sized to its own type
+  const H = geo.h + pad*2 + TB;
+  const ox = -geo.bb.x0 + pad, oy = -geo.bb.y0 + pad;
+  const reveal = opt.reveal;                      // null = show everything
+  const cur = opt.current;
+
+  let g = "";
+
+  /* grid */
+  const step = geo.w > 460 ? 50 : 20;
+  let grid = "";
+  for(let x=Math.ceil(geo.bb.x0/step)*step; x<=geo.bb.x1; x+=step)
+    grid += `<line class="gridline" stroke-width="${f1(hair)}" x1="${f1(x)}" y1="${f1(geo.bb.y0-pad*.6)}" x2="${f1(x)}" y2="${f1(geo.bb.y1+pad*.6)}"/>`;
+  for(let y=Math.ceil(geo.bb.y0/step)*step; y<=geo.bb.y1; y+=step)
+    grid += `<line class="gridline" stroke-width="${f1(hair)}" x1="${f1(geo.bb.x0-pad*.6)}" y1="${f1(y)}" x2="${f1(geo.bb.x1+pad*.6)}" y2="${f1(y)}"/>`;
+  g += `<g>${grid}</g>`;
+
+  /* track, in build order so later pieces sit on top */
+  const all = [];
+  geo.lanes.forEach(l=> l.nodes.forEach(n=> all.push(n)));
+  all.sort((a,b)=>a.gi-b.gi);
+
+  let futures="", shadows="", halos="", bases="", faces="", airs="";
+  for(const n of all){
+    if(!n.d) continue;
+    if(reveal!=null && n.gi > reveal){
+      // not placed yet — a faint outline so you can see where the build is heading
+      futures += `<path class="seg seg-future" stroke-width="${f1(k*.5)}" d="${n.d}"/>`;
+      continue;
+    }
+    const isNew = (cur!=null && n.gi === cur);
+    if(n.air){
+      airs += `<path class="seg air" stroke-width="${f1(k*.55)}" stroke-dasharray="${f1(k*1.6)} ${f1(k*1.6)}" d="${n.d}"/>`;
+    } else {
+      shadows += `<path class="seg seg-shadow" transform="translate(${f1(k*.35)},${f1(k*.5)})" d="${n.d}"/>`;
+      if(isNew) halos += `<path class="seg seg-halo" stroke-width="${f1(k*3.4)}" d="${n.d}"/>`;
+      bases   += `<path class="seg seg-base${isNew?" new":""}"${isNew?' pathLength="1"':""} d="${n.d}"/>`;
+      faces   += `<path class="seg seg-face${isNew?" new":""}"${isNew?' pathLength="1"':""} d="${n.d}"/>`;
+    }
+  }
+  g += `<g>${futures}</g><g>${shadows}</g><g>${halos}</g><g>${bases}</g><g>${faces}</g><g>${airs}</g>`;
+
+  /* glyphs: loops, crossings, splitters, tags */
+  let gl = "";
+  for(const n of all){
+    if(reveal!=null && n.gi > reveal) continue;
+    const isNew = (cur!=null && n.gi === cur);
+    for(const q of n.glyphs){
+      if(q.kind==="loop"){
+        gl += `<line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(q.from.x)}" y1="${f1(q.from.y)}" x2="${f1(q.x)}" y2="${f1(q.y)}"/>`;
+        gl += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="var(--ember)" stroke-width="${f1(k*.5)}"/>`;
+        gl += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="var(--track)" stroke-width="${f1(k*.3)}"${isNew?' class="seg new"':''}/>`;
+        gl += `<text class="glyphlbl" font-size="${f1(fs*.72)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y - q.r - fs*.5)}">${esc(q.txt)}</text>`;
+      } else if(q.kind==="cross"){
+        gl += `<g transform="rotate(${f1(q.hdg)} ${f1(q.x)} ${f1(q.y)})">
+          <rect x="${f1(q.x-k*1.5)}" y="${f1(q.y-k*1.5)}" width="${f1(k*3)}" height="${f1(k*3)}" fill="var(--sheet)" stroke="var(--draft)" stroke-width="${f1(hair*2)}"/></g>`;
+        gl += `<text class="glyphlbl" font-size="${f1(fs*.66)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y - k*2)}">${esc(q.txt)}</text>`;
+      } else if(q.kind==="split"){
+        gl += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(k*1.5)}" fill="var(--sheet)" stroke="var(--draft)" stroke-width="${f1(hair*2)}"/>`;
+        gl += `<text class="glyphlbl" font-size="${f1(fs*.66)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y - k*2.1)}">${esc(q.txt)}</text>`;
+      } else {
+        gl += `<text class="glyphlbl" font-size="${f1(fs*.66)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y)}">${esc(q.txt)}</text>`;
+      }
+    }
+  }
+  g += `<g>${gl}</g>`;
+
+  /* start / finish markers */
+  let mk = "";
+  geo.lanes.forEach((l)=>{
+    if(!l.nodes.length) return;
+    const a = l.nodes[0], b = l.nodes[l.nodes.length-1];
+    const showA = (reveal==null || a.gi <= reveal), showB = (reveal==null || b.gi <= reveal);
+    if(showA){
+      mk += `<circle cx="${f1(a.from.x)}" cy="${f1(a.from.y)}" r="${f1(k*1.15)}" fill="var(--sheet)" stroke="var(--ink-3)" stroke-width="${f1(hair*2)}"/>`;
+      mk += `<text class="marker" font-size="${f1(fs*.8)}" fill="var(--ink-2)" text-anchor="end" x="${f1(a.from.x - k*2)}" y="${f1(a.from.y + fs*.28)}">${esc(l.name.toUpperCase())}</text>`;
+    }
+    if(showB && !l.def.closed){
+      const t = b.to;
+      mk += `<rect x="${f1(t.x-k*.5)}" y="${f1(t.y-k*3)}" width="${f1(k)}" height="${f1(k*6)}" fill="var(--ink)" opacity=".82"/>`;
+      mk += `<text class="marker" font-size="${f1(fs*.8)}" fill="var(--ink-2)" x="${f1(t.x + k*1.6)}" y="${f1(t.y + fs*.28)}">FINISH</text>`;
+    }
+  });
+  g += `<g>${mk}</g>`;
+
+  /* dimensions */
+  const dy = geo.bb.y1 + pad*.62, dx = geo.bb.x1 + pad*.62, tick = k*1.1;
+  let dim = `<line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(geo.bb.x0)}" y1="${f1(dy)}" x2="${f1(geo.bb.x1)}" y2="${f1(dy)}"/>
+    <line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(geo.bb.x0)}" y1="${f1(dy-tick)}" x2="${f1(geo.bb.x0)}" y2="${f1(dy+tick)}"/>
+    <line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(geo.bb.x1)}" y1="${f1(dy-tick)}" x2="${f1(geo.bb.x1)}" y2="${f1(dy+tick)}"/>
+    <text class="dimtext" font-size="${f1(fs*.78)}" text-anchor="middle" x="${f1((geo.bb.x0+geo.bb.x1)/2)}" y="${f1(dy - fs*.5)}">${Math.round(geo.w)} cm</text>
+    <line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(dx)}" y1="${f1(geo.bb.y0)}" x2="${f1(dx)}" y2="${f1(geo.bb.y1)}"/>
+    <line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(dx-tick)}" y1="${f1(geo.bb.y0)}" x2="${f1(dx+tick)}" y2="${f1(geo.bb.y0)}"/>
+    <line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(dx-tick)}" y1="${f1(geo.bb.y1)}" x2="${f1(dx+tick)}" y2="${f1(geo.bb.y1)}"/>
+    <text class="dimtext" font-size="${f1(fs*.78)}" text-anchor="middle" transform="rotate(-90 ${f1(dx + fs*.75)} ${f1((geo.bb.y0+geo.bb.y1)/2)})" x="${f1(dx + fs*.75)}" y="${f1((geo.bb.y0+geo.bb.y1)/2)}">${Math.round(geo.h)} cm</text>`;
+  g += `<g>${dim}</g>`;
+
+  /* title block */
+  const by = geo.bb.y1 + pad - TB*.15;
+  const cells = opt.titleCells || [];
+  let tb = `<line class="dimline" stroke-width="${f1(hair*2)}" x1="${f1(geo.bb.x0-pad*.8)}" y1="${f1(by)}" x2="${f1(geo.bb.x1+pad*.8)}" y2="${f1(by)}"/>`;
+  const span = (geo.bb.x1+pad*.8) - (geo.bb.x0-pad*.8);
+  cells.forEach((c,i)=>{
+    const cx = (geo.bb.x0-pad*.8) + span*(i+.02)/cells.length;
+    tb += `<text class="tb" font-size="${f1(fs*.6)}" x="${f1(cx)}" y="${f1(by + fs*1.0)}">${esc(c.k)}</text>`;
+    tb += `<text class="tb k" font-size="${f1(fs*.82)}" x="${f1(cx)}" y="${f1(by + fs*2.1)}">${esc(c.v)}</text>`;
+  });
+  g += `<g>${tb}</g>`;
+
+  return `<svg viewBox="0 0 ${f1(W)} ${f1(H)}" role="img" aria-label="${esc(opt.alt||L.nm+" track plan")}">
+    <rect width="${f1(W)}" height="${f1(H)}" fill="var(--sheet)"/>
+    <g transform="translate(${f1(ox)},${f1(oy)})">${g}</g></svg>`;
+}
+
+/* Elevation profile strip — only worth drawing when the layout descends */
+function drawProfile(geo, an){
+  if(an.drop < 12) return "";
+  const W = 300, H = 30, padL = 26, padR = 8, padT = 6, padB = 8;
+  const maxS = Math.max(...an.lanes.map(l=> l.profile.length ? l.profile[l.profile.length-1].s : 1), 1);
+  const zs = an.lanes.flatMap(l=> l.profile.map(q=>q.z));
+  const zMin = Math.min(...zs), zMax = Math.max(...zs), zR = Math.max(1, zMax-zMin);
+  const X = v => padL + (W-padL-padR)*(v/maxS);
+  const Y = v => padT + (H-padT-padB)*(1-(v-zMin)/zR);
+  let body = "";
+  an.lanes.forEach((l,i)=>{
+    if(l.profile.length<2) return;
+    const pts = l.profile.map(q=>`${f1(X(q.s))} ${f1(Y(q.z))}`);
+    const lastX = X(l.profile[l.profile.length-1].s), firstX = X(l.profile[0].s);
+    body += `<path d="M ${pts.join(" L ")} L ${f1(lastX)} ${f1(Y(zMin))} L ${f1(firstX)} ${f1(Y(zMin))} Z" fill="var(--track)" opacity="${i===0?".14":".08"}"/>`;
+    body += `<path d="M ${pts.join(" L ")}" fill="none" stroke="var(--track)" stroke-width=".9" stroke-linejoin="round" stroke-linecap="round" opacity="${i===0?"1":".5"}"/>`;
+  });
+  return `<div class="profile"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Elevation profile: ${Math.round(zMax)} cm down to ${Math.round(zMin)} cm over ${(maxS/100).toFixed(1)} metres of track">
+    <rect width="${W}" height="${H}" fill="var(--sheet)"/>
+    <line x1="${padL}" y1="${f1(Y(zMin))}" x2="${W-padR}" y2="${f1(Y(zMin))}" class="dimline" stroke-width=".3"/>
+    <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${f1(Y(zMin))}" class="dimline" stroke-width=".3"/>
+    ${body}
+    <text class="dimtext" font-size="3.4" x="${padL-3}" y="${padT+1.4}" text-anchor="end">${Math.round(zMax)}</text>
+    <text class="dimtext" font-size="3.4" x="${padL-3}" y="${f1(Y(zMin)+1.2)}" text-anchor="end">${Math.round(zMin)}</text>
+    <text class="dimtext" font-size="3.4" x="${padL}" y="${H-1.8}">ELEVATION · CM</text>
+    <text class="dimtext" font-size="3.4" x="${W-padR}" y="${H-1.8}" text-anchor="end">${(maxS/100).toFixed(1)} m of track</text>
+  </svg></div>`;
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   STATE
+   ============================================================ */
+const S = {stage:0, sets:new Set(), bin:{}, photo:null, planId:null, step:0, onlyBuildable:true};
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+function save(){
+  try{ localStorage.setItem("otl", JSON.stringify({sets:[...S.sets], bin:S.bin, planId:S.planId})); }catch(e){}
+}
+function load(){
+  try{
+    const raw = localStorage.getItem("otl"); if(!raw) return;
+    const d = JSON.parse(raw);
+    if(Array.isArray(d.sets)) d.sets.forEach(x=>S.sets.add(x));
+    if(d.bin && typeof d.bin==="object") S.bin = d.bin;
+    if(d.planId) S.planId = d.planId;
+  }catch(e){}
+}
+
+const binTotal = () => PKEYS.reduce((a,k)=>a+(S.bin[k]||0), 0);
+function setsToBin(){
+  const b = {};
+  SETS.filter(s=>S.sets.has(s.id)).forEach(s=>{ for(const k in s.p) b[k]=(b[k]||0)+s.p[k]; });
+  S.bin = b;
+}
+
+/* ============================================================
+   MATCHING + CHECKS
+   ============================================================ */
+function matchPlan(L){
+  const req = requirements(L);
+  let have=0, tot=0; const missing=[];
+  for(const k in req){
+    tot += req[k];
+    const h = Math.min(S.bin[k]||0, req[k]);
+    have += h;
+    if((S.bin[k]||0) < req[k]) missing.push({k, n:req[k]-(S.bin[k]||0)});
+  }
+  return {req, pct: tot? have/tot : 0, missing, ok: missing.length===0, tot};
+}
+const kmh = v => v*3.6, scaleMph = v => v*64*2.23694;
+
+function buildChecks(L, geo, an){
+  const out = [];
+  const add=(level,pill,txt)=>out.push({level,pill,txt});
+
+  an.lanes.forEach(l=>{
+    l.events.forEach(e=>{
+      if(e.type==="loop"){
+        const m = e.margin;
+        const lvl = m>=0.15 ? "pass" : (m>=0 ? "marginal" : "fail");
+        const pct = Math.round(m*100);
+        add(lvl, lvl==="pass"?"CLEARS":(lvl==="marginal"?"TIGHT":"FAILS"),
+          `<b>${esc(l.name)} · ${esc(e.label)}</b> — arrives at <em>${e.vHave.toFixed(2)} m/s</em>, needs <em>${e.vNeed.toFixed(2)} m/s</em> to hold the roof of a ${e.r*2} cm loop. ` +
+          (lvl==="fail"
+            ? `Short by ${Math.abs(pct)}% of the energy budget — raise the start by about <em>${Math.ceil(((e.vNeed*e.vNeed - e.vHave*e.vHave)/(2*G))*100/0.55)} cm</em> or shorten the run-in.`
+            : lvl==="marginal"
+              ? `Only ${pct}% in hand. It will work on a clean, dry track and fail on a dusty one — add 10 cm of start height for confidence.`
+              : `${pct}% of margin in hand. Comfortable.`));
+      }
+      if(e.type==="jump"){
+        const d = Math.round(e.range);
+        const lvl = e.v < 2.2 ? "fail" : (d > 170 ? "marginal" : "pass");
+        add(lvl, lvl==="fail"?"FLOPS":(lvl==="marginal"?"LONG":"LANDS"),
+          `<b>${esc(l.name)} · ${esc(e.label)}</b> — leaves the lip at <em>${e.v.toFixed(2)} m/s</em> and lands <em>${d} cm</em> downrange. ` +
+          (lvl==="fail"
+            ? `Too slow to fly properly — it will nose over and land on its roof. Add about <em>${Math.ceil((2.2*2.2 - e.v*e.v)/(2*G)*100/0.55)} cm</em> of start height.`
+            : lvl==="marginal"
+              ? `That is a lot of floor to find. Shorten the approach or drop the start by 15 cm if the room will not take it.`
+              : `The plan is dimensioned to that distance — mark the floor at ${d} cm before you place the ramp.`));
+      }
+      if(e.type==="stall"){
+        add("fail","STALLS", `<b>${esc(l.name)}</b> runs out of energy at <em>${esc(e.at||"a flat section")}</em>. Steepen the section above it or drop a booster in.`);
+      }
+    });
+  });
+
+  if(an.finishers.length >= 2){
+    const ds = an.finishers.map(l=>l.dist), dt = an.finishers.map(l=>l.t);
+    const dDist = Math.max(...ds)-Math.min(...ds), dT = Math.max(...dt)-Math.min(...dt);
+    const lvl = dDist < 6 ? "pass" : (dDist < 40 ? "marginal" : "fail");
+    const slow = an.finishers[dt.indexOf(Math.max(...dt))];
+    add(lvl, lvl==="pass"?"FAIR":"STAGGER",
+      dDist < 6
+        ? `<b>Race fairness</b> — both lanes measure within <em>${Math.round(dDist)} cm</em> of each other. Start them level; the result is the drivers, not the layout.`
+        : `<b>Race fairness</b> — ${esc(slow.name)} is <em>${Math.round(dDist)} cm</em> longer and finishes about <em>${(dT*1000).toFixed(0)} ms</em> later. Start it <em>${Math.round(dDist)} cm</em> ahead to even the race, or accept it as the outside line.`);
+  }
+
+  if(an.startH > 130)
+    add("marginal","HEIGHT", `<b>Start height ${Math.round(an.startH)} cm</b> — higher than most tables. You will need a bookshelf, a stair rail or a door frame to clamp to.`);
+  else if(an.startH > 0)
+    add("pass","MOUNT", `<b>Start height ${Math.round(an.startH)} cm</b> — a standard dining table or desk edge will do it.`);
+
+  if(requirements(L).booster)
+    add("pass","POWERED", `<b>Boosters carry this layout</b>, so gravity is not the limit — but fit fresh batteries. A booster at 70% output drops lap speed by roughly a quarter.`);
+
+  add("pass","SPACE", `<b>Clear floor needed: ${Math.round(geo.w)} × ${Math.round(geo.h)} cm</b> plus about 30 cm of run-off past the finish so cars stop on the track, not the skirting board.`);
+  return out;
+}
+
+/* ============================================================
+   BUILD STEPS
+   ============================================================ */
+const TIPS = {
+  loop:"Sight down the run-in from behind. The loop must be square to it — 5° of lean is enough to throw the car into the outside wall on exit.",
+  jump:"Tape the landing ramp down once it is in the right place. A ramp that creeps 3 cm between runs turns a clean landing into a crash.",
+  cross:"Both lanes share this single piece. Get it seated flat first, then bring each lane in to meet it.",
+  split:"Check the splitter blade sits centred. Off-centre, it feeds one lane consistently and the race is decided before the cars move.",
+  cork:"Corkscrews want to unwind under load. Support the entry and exit, not the middle.",
+  hairpin:"Support both ends of a 180° bend. Unsupported, it twists and lifts the outside edge."
+};
+function stepsFor(L, geo, an, req){
+  const steps = [];
+  const clamps = req.clamp||0, supports = req.support||0;
+  steps.push({
+    kind:"prep", reveal:-1,
+    t:"Set out the site",
+    d:`Clear a floor area of about ${Math.round(geo.w)} × ${Math.round(geo.h)} cm. Lay out every piece from the kit list within reach before you join anything — hunting for a connector mid-build is how alignment gets lost.`,
+    use: [clamps?`${clamps} clamp${clamps>1?"s":""}`:null, supports?`${supports} support column${supports>1?"s":""}`:null].filter(Boolean).join(" · "),
+    tip: an.startH>0 ? `Fix your clamps first, at ${Math.round(an.startH)} cm. Everything else is measured down from them.` : "Boosters go down first — everything else is aligned to them."
+  });
+  geo.lanes.forEach((lane,li)=>{
+    lane.nodes.forEach((n,ni)=>{
+      const s = n.seg, p = segPieces(s);
+      const use = Object.keys(p).map(k=>`${p[k]} × ${PIECES[k].nm}`).join(" · ");
+      let tip = null;
+      if(s.t==="loop") tip = TIPS.loop;
+      else if(s.t==="jump") tip = TIPS.jump;
+      else if(s.t==="cross") tip = TIPS.cross;
+      else if(s.t==="split") tip = TIPS.split;
+      else if(s.t==="cork") tip = TIPS.cork;
+      else if(s.t==="arc" && Math.abs(s.deg)>=180) tip = TIPS.hairpin;
+      else if(ni===0) tip = "Clamp this piece before adding the next one. A ramp built from the bottom up never ends up where you drew it.";
+      let d;
+      if(s.t==="str") d = `Run ${s.len} cm of straight track, dropping ${s.drop||0} cm over that length${(s.drop||0)>0?` — about ${Math.round(Math.asin(Math.min(1,(s.drop||0)/s.len))/RAD)}° of slope`:", dead level"}.`;
+      else if(s.t==="arc") d = `Curve ${Math.abs(s.deg)}° to the ${s.deg>0?"right":"left"} on a ${s.r} cm radius${(s.drop||0)>0?`, losing ${s.drop} cm of height`:""}.`;
+      else if(s.t==="loop") d = `Stand the ${s.r*2} cm loop on the run-in and lock its brace. Feed the exit back onto the floor line.`;
+      else if(s.t==="cork") d = `Fit the corkscrew across ${s.len} cm, dropping ${s.drop} cm through the twist.`;
+      else if(s.t==="jump") d = `Set the launch ramp, then leave a ${s.gap} cm gap before the landing run.`;
+      else if(s.t==="cross") d = `Seat the criss-cross piece where the two lanes meet, flat on the floor.`;
+      else if(s.t==="split") d = `Fit the splitter to the end of the feed ramp. Both branches hang off this one piece.`;
+      steps.push({kind:"seg", reveal:n.gi, lane:li,
+        t:`${geo.lanes.length>1?lane.name+" · ":""}${s.label}`, d, use, tip});
+    });
+  });
+  const last = geo.lanes.reduce((a,l)=> l.nodes.length? Math.max(a, l.nodes[l.nodes.length-1].gi) : a, -1);
+  steps.push({
+    kind:"test", reveal:last,
+    t:"Test, then tune",
+    d:`Roll one car through slowly by hand first, watching for lips at every joint — a 1 mm step is worth more lost speed than any curve on this layout. Then run it for real.`,
+    use:"", tip:`Predicted run: ${an.runTime.toFixed(2)} s at up to ${an.vmax.toFixed(2)} m/s — that is ${Math.round(scaleMph(an.vmax))} mph at 1:64 scale. If you are more than 20% slower, look for a joint step or a sagging support before you blame the car.`
+  });
+  return steps;
+}
+</script>
+
+<script>
+"use strict";
+/* ============================================================
+   COMPUTE CACHE
+   ============================================================ */
+const CACHE = {};
+function compute(L){
+  if(!CACHE[L.id]){
+    let geo = walkLayout(L); indexNodes(geo);
+    let an = analyse(L, geo);
+    // Second pass: a jump's air gap is an OUTPUT of the entry speed, not an input.
+    // Redraw it where the car actually lands so the plan and the advice agree.
+    let moved = false;
+    an.lanes.forEach(l => l.events.forEach(e => {
+      if(e.type==="jump"){
+        const g = Math.max(20, Math.round(e.range/5)*5);
+        if(e.seg.gap !== g){ e.seg.gap = g; moved = true; }
+      }
+    }));
+    if(moved){ geo = walkLayout(L); indexNodes(geo); an = analyse(L, geo); }
+    CACHE[L.id] = {geo, an, req:requirements(L)};
+  }
+  return CACHE[L.id];
+}
+const layoutById = id => LAYOUTS.find(l=>l.id===id);
+
+function titleCells(L, c, m){
+  return [
+    {k:"LAYOUT", v:L.nm.toUpperCase()},
+    {k:"CLASS",  v:(L.cls==="dual"?"2-LANE RACE":"SINGLE LINE")},
+    {k:"PIECES", v:String(m.tot)},
+    {k:"DROP",   v:Math.round(c.an.drop)+" CM"},
+    {k:"SCALE",  v:"1:64 · CM"}
+  ];
+}
+function readoutHTML(c, m){
+  const a = c.an;
+  const cells = [
+    {k:"Track length", v:(a.totalDist/100).toFixed(1), u:"m"},
+    {k:"Footprint",    v:`${Math.round(c.geo.w)}×${Math.round(c.geo.h)}`, u:"cm"},
+    {k:"Start height", v:Math.round(a.startH), u:"cm"},
+    {k:"Top speed",    v:a.vmax.toFixed(1), u:"m/s"},
+    {k:"Scale speed",  v:Math.round(scaleMph(a.vmax)), u:"mph"},
+    {k:"Run time",     v:a.runTime.toFixed(2), u:"s"},
+    {k:"Pieces",       v:String(m.tot), u:""}
+  ];
+  return cells.map(x=>`<div><div class="k">${x.k}</div><div class="v">${x.v}${x.u?`<small>${x.u}</small>`:""}</div></div>`).join("");
+}
+
+/* ============================================================
+   STAGE 1 — SETS
+   ============================================================ */
+function renderSets(){
+  $("#setgrid").innerHTML = SETS.map(s=>{
+    const on = S.sets.has(s.id);
+    const contents = Object.keys(s.p).map(k=>`${s.p[k]}× ${PIECES[k].ab}`).join("  ");
+    return `<button class="setcard" data-set="${s.id}" aria-pressed="${on}">
+      <span class="tick" aria-hidden="true">✓</span>
+      <span class="kind">${esc(s.kind)}</span>
+      <h4>${esc(s.nm)}</h4>
+      <span class="contents">${esc(contents)}</span>
+    </button>`;
+  }).join("");
+}
+
+/* ============================================================
+   STAGE 2 — PARTS BIN
+   ============================================================ */
+function renderBin(){
+  $("#bin").innerHTML = PKEYS.map(k=>{
+    const n = S.bin[k]||0;
+    return `<div class="part${n?" has":""}">
+      <div class="top">${glyph(k)}<div><div class="nm">${esc(PIECES[k].nm)}</div><div class="ab">${PIECES[k].ab}</div></div></div>
+      <div class="stepbox">
+        <button data-dec="${k}" aria-label="One fewer ${esc(PIECES[k].nm)}">−</button>
+        <input type="number" min="0" max="999" value="${n}" data-num="${k}" aria-label="${esc(PIECES[k].nm)} count">
+        <button data-inc="${k}" aria-label="One more ${esc(PIECES[k].nm)}">+</button>
+      </div>
+    </div>`;
+  }).join("");
+  const tot = binTotal();
+  const kinds = PKEYS.filter(k=>S.bin[k]>0).length;
+  const buildable = LAYOUTS.filter(L=>matchPlan(L).ok).length;
+  $("#bin-summary").innerHTML = `
+    <div class="scanlog" style="border:0;background:transparent;padding:0">
+      <b>${tot}</b> pieces · <b>${kinds}</b> of ${PKEYS.length} types<br>
+      <b>${buildable}</b> of ${LAYOUTS.length} layouts buildable right now
+    </div>
+    ${tot===0?'<p class="note" style="margin-top:10px">Nothing in the bin yet. Tick some sets in stage 1, photograph the pile, or just type counts in.</p>':""}`;
+  save();
+}
+
+/* ============================================================
+   PHOTO SCAN
+   ============================================================ */
+let SAMPLE = null, SLIMITS = null;
+const SCAN_PROMPT = `These photos show Hot Wheels / Track Builder track parts laid out. Count how many of each part you can actually see.
+
+Use exactly these keys:
+straight  - flat orange straight track sections
+curve     - curved or bent orange track sections
+loop      - full circular loops, or the curved half-arcs that clip into a loop
+corkscrew - a helical / twisted spiral section
+jump      - a ramp piece that kicks upward at one end
+crossover - an X-shaped criss-cross intersection piece
+splitter  - a Y-shaped piece that splits one lane into two
+launcher  - a boxy hand launcher with a plunger or crank
+booster   - a motorised battery box with rubber spinning wheels
+connector - small clips that join two track ends together
+clamp     - a C-shaped clamp for fixing track to furniture
+support   - a vertical stand or column that holds track off the floor
+gate      - a start or finish gate arch
+
+Rules: count only parts you can clearly see. Omit any key you see none of. If parts overlap in a pile, give your best count and set confidence to "low".
+
+Reply with only a JSON object in this shape:
+{"counts":{"straight":6,"curve":2},"confidence":"high","notes":"one short sentence about what you saw"}`;
+
+async function initSample(){
+  const el = $("#scan-avail");
+  try{
+    if(!window.claude || !claude.use){ el.textContent = "Scan needs the published page"; return; }
+    SAMPLE = await claude.use("sample");
+    if(!SAMPLE){ el.textContent = "Scan unavailable here"; return; }
+    SLIMITS = await SAMPLE.limits().catch(()=>null);
+    if(!SLIMITS || !SLIMITS.images){ SAMPLE = null; el.textContent = "Photo scan unavailable here"; return; }
+    $("#file").accept = SLIMITS.images.mediaTypes.join(",");
+    el.textContent = "Ready";
+  }catch(e){ el.textContent = "Scan unavailable here"; }
+}
+function setPhoto(file){
+  if(S.photo && S.photo.url) URL.revokeObjectURL(S.photo.url);
+  S.photo = file ? {file, url:URL.createObjectURL(file)} : null;
+  $("#shot-slot").innerHTML = S.photo
+    ? `<div class="shot"><img src="${S.photo.url}" alt="Your track pieces"><button class="clear" id="btn-clear">Remove</button></div>`
+    : `<div class="drop" id="drop"><h4>Spread the pieces out, then photograph them</h4><p>One layer, plain floor, good light. Overlapping piles are guesswork — for the scan and for you.</p></div>`;
+  $("#btn-scan").disabled = !(S.photo && SAMPLE);
+  if(!S.photo) $("#scan-out").innerHTML = "";
+}
+async function runScan(){
+  if(!S.photo || !SAMPLE) return;
+  const out = $("#scan-out"), btn = $("#btn-scan");
+  btn.disabled = true;
+  out.innerHTML = `<div class="scanlog"><span class="pulse"></span> Reading the photo…</div>`;
+  try{
+    const r = await SAMPLE.json(SCAN_PROMPT, {images:S.photo.file, modelTier:"complex"});
+    const counts = (r && typeof r.counts==="object" && r.counts) ? r.counts : {};
+    const clean = {};
+    for(const k in counts){ const n = Math.max(0, Math.round(Number(counts[k])||0)); if(PIECES[k] && n>0) clean[k]=n; }
+    if(!Object.keys(clean).length){
+      out.innerHTML = `<div class="scanlog">No track parts recognised in that photo. Try again with the pieces spread into a single layer on a plain floor.</div>`;
+      btn.disabled = false; return;
+    }
+    const rows = Object.keys(clean).map(k=>{
+      const now = S.bin[k]||0, d = clean[k]-now;
+      return `<div>${clean[k]} × ${esc(PIECES[k].nm)}${d?` <span style="color:var(--track)">(bin has ${now})</span>`:""}</div>`;
+    }).join("");
+    out.innerHTML = `<div class="scanlog"><b>Scan result</b> — confidence ${esc(String(r.confidence||"unknown"))}
+      ${r.notes?`<div style="color:var(--ink-3);margin:4px 0 8px">${esc(String(r.notes).slice(0,200))}</div>`:""}
+      <div style="margin-top:6px">${rows}</div></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn primary wide" id="apply-rep">Use these counts</button>
+        <button class="btn wide" id="apply-add">Add to bin</button>
+      </div>
+      <p class="note" style="margin-top:8px">Counting a pile from one photo is genuinely hard — check the numbers against the bin before you trust a layout.</p>`;
+    $("#apply-rep").onclick = ()=>{ S.bin = {...clean}; renderBin(); out.innerHTML = `<div class="scanlog">Bin replaced with the scan.</div>`; };
+    $("#apply-add").onclick = ()=>{ for(const k in clean) S.bin[k]=(S.bin[k]||0)+clean[k]; renderBin(); out.innerHTML = `<div class="scanlog">Scan added on top of the bin.</div>`; };
+  }catch(e){
+    const code = e && e.code;
+    const msg = code==="not_granted" ? "Scanning needs your permission — reload and allow it, or type the counts in."
+      : code==="rate_limited" ? "Too many scans just now. Wait a minute and try again."
+      : code==="images_unavailable" ? "This view cannot send photos. Type the counts in instead."
+      : code==="image_rejected" ? "That file could not be read. Try a JPEG or PNG under 20 MB."
+      : code==="invalid_json" ? "The scan came back garbled. Try a clearer, flatter photo."
+      : "The scan did not complete. Type the counts in, or try again.";
+    out.innerHTML = `<div class="scanlog">${esc(msg)}</div>`;
+  }
+  btn.disabled = false;
+}
+
+/* ============================================================
+   STAGE 3 — LAYOUTS
+   ============================================================ */
+function renderPlans(){
+  const rows = LAYOUTS.map(L=>({L, m:matchPlan(L), c:compute(L)}))
+    .sort((a,b)=> (b.m.ok - a.m.ok) || (b.m.pct - a.m.pct));
+  const shown = S.onlyBuildable ? rows.filter(r=>r.m.ok) : rows;
+  const list = $("#planlist");
+  if(!shown.length){
+    list.innerHTML = `<div class="empty">Nothing is buildable from the bin yet.<br><br>
+      ${S.onlyBuildable?'Untick "buildable only" to see what each layout would need.':"Add some pieces in stage 2."}</div>`;
+  } else {
+    list.innerHTML = shown.map(({L,m,c})=>{
+      const miss = m.missing.map(x=>`${x.n}× ${PIECES[x.k].nm}`).join(", ");
+      return `<button class="plancard${m.ok?"":" short"}" data-plan="${L.id}" aria-pressed="${S.planId===L.id}">
+        <span class="r1"><h4>${esc(L.nm)}</h4><span class="tag ${L.cls}">${L.cls==="dual"?"2-lane race":"single line"}</span></span>
+        <span class="desc">${esc(L.blurb)}</span>
+        <span class="meta"><span>${esc(L.skill)}</span><span>${(c.an.totalDist/100).toFixed(1)} m</span><span>${Math.round(c.geo.w)}×${Math.round(c.geo.h)} cm</span><span>${m.tot} pieces</span></span>
+        ${m.ok?"":`<span class="bar"><i style="width:${Math.round(m.pct*100)}%"></i></span>
+        <span class="missing">${Math.round(m.pct*100)}% of the kit — short: ${esc(miss)}</span>`}
+      </button>`;
+    }).join("");
+  }
+  if(!S.planId || !shown.some(r=>r.L.id===S.planId)) S.planId = shown.length ? shown[0].L.id : null;
+  renderPlanDetail();
+}
+
+function renderPlanDetail(){
+  const L = S.planId && layoutById(S.planId);
+  if(!L){
+    $("#plan-plate").innerHTML = `<div class="empty">Pick a layout to see its plan.</div>`;
+    $("#plan-readout").innerHTML = ""; $("#plan-checks").innerHTML = ""; $("#plan-kit").innerHTML = "";
+    $("#btn-build").disabled = true;
+    return;
+  }
+  const c = compute(L), m = matchPlan(L);
+  $("#plan-plate").innerHTML = drawSheet(L, c.geo, {titleCells:titleCells(L,c,m), alt:L.nm+" scale plan"}) + drawProfile(c.geo, c.an);
+  $("#plan-readout").innerHTML = readoutHTML(c, m);
+  $("#plan-checks").innerHTML = buildChecks(L, c.geo, c.an)
+    .map(x=>`<div class="check ${x.level}"><span class="pill">${x.pill}</span><span class="txt">${x.txt}</span></div>`).join("")
+    + (L.notes||[]).map(n=>`<p class="note" style="margin-top:4px">${esc(n)}</p>`).join("");
+  const kit = Object.keys(c.req).sort((a,b)=>c.req[b]-c.req[a]);
+  $("#plan-kit").innerHTML = `<div style="display:flex;flex-direction:column;gap:6px">` + kit.map(k=>{
+    const have = S.bin[k]||0, short = have < c.req[k];
+    return `<div style="display:flex;align-items:center;gap:9px;font-size:13px">
+      <span style="width:30px;flex:0 0 auto;color:var(--track)">${glyph(k)}</span>
+      <span style="flex:1">${esc(PIECES[k].nm)}</span>
+      <span class="num" style="color:${short?"var(--fault)":"var(--ink-2)"};font-weight:700">${c.req[k]}</span>
+      <span class="num" style="color:var(--ink-3);font-size:11px;width:52px;text-align:right">have ${have}</span>
+    </div>`;
+  }).join("") + `</div>
+  <p class="note" style="margin-top:12px">A start gate and a finish gate are optional on every layout — they change nothing physically, they just make the result easier to call.</p>`;
+  $("#btn-build").disabled = false;
+  $("#btn-build").textContent = m.ok ? "Open the build guide" : "Open the build guide anyway";
+}
+
+/* ============================================================
+   STAGE 4 — BUILD GUIDE
+   ============================================================ */
+let STEPS = [];
+function renderBuild(){
+  const L = S.planId && layoutById(S.planId);
+  if(!L) return;
+  const c = compute(L), m = matchPlan(L);
+  STEPS = stepsFor(L, c.geo, c.an, c.req);
+  S.step = Math.min(S.step, STEPS.length-1);
+  $("#build-title").textContent = L.nm;
+  $("#build-chip").textContent = `${L.cls==="dual"?"2-lane race":"single line"} · ${L.skill} · ${STEPS.length} steps`;
+  $("#build-sub").textContent = L.blurb;
+
+  $("#steplist").innerHTML = STEPS.map((s,i)=>`
+    <button class="stepitem${i<S.step?" done":""}" aria-current="${i===S.step}" data-step="${i}">
+      <span class="no">${i===STEPS.length-1?"✓":i+1}</span>
+      <span><span class="t">${esc(s.t)}</span><span class="d">${esc(s.d)}</span>
+      ${s.use?`<span class="use">${esc(s.use)}</span>`:""}
+      ${(i===S.step && s.tip)?`<span class="tip">${esc(s.tip)}</span>`:""}</span>
+    </button>`).join("");
+
+  const st = STEPS[S.step];
+  $("#build-plate").innerHTML = drawSheet(L, c.geo, {
+    reveal: st.reveal, current: st.kind==="seg" ? st.reveal : null,
+    titleCells:[{k:"LAYOUT",v:L.nm.toUpperCase()},{k:"STEP",v:`${S.step+1} OF ${STEPS.length}`},{k:"STAGE",v:st.t.toUpperCase().slice(0,22)},{k:"PIECES",v:String(m.tot)},{k:"SCALE",v:"1:64 · CM"}],
+    alt:`${L.nm}, step ${S.step+1} of ${STEPS.length}: ${st.t}`
+  }) + drawProfile(c.geo, c.an);
+  $("#build-readout").innerHTML = readoutHTML(c, m);
+  $("#progbar").style.width = ((S.step)/(STEPS.length-1)*100)+"%";
+  $("#stepcount").textContent = `${S.step+1} / ${STEPS.length}`;
+  $("#prev").disabled = S.step===0;
+  $("#next").disabled = S.step===STEPS.length-1;
+  const list = $("#steplist"), cur = $(`.stepitem[data-step="${S.step}"]`);
+  if(list && cur && list.scrollHeight > list.clientHeight){
+    list.scrollTo({top: cur.offsetTop - list.clientHeight/2 + cur.offsetHeight/2, behavior:"smooth"});
+  }
+}
+function goStep(i){
+  S.step = Math.max(0, Math.min(STEPS.length-1, i));
+  renderBuild();
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function canEnter(n){
+  if(n<=1) return true;
+  if(n===2) return binTotal()>0;
+  if(n===3) return !!S.planId;
+  return false;
+}
+function go(n){
+  if(!canEnter(n)) return;
+  S.stage = n;
+  $$(".stage").forEach((el,i)=> el.classList.toggle("on", i===n));
+  $$(".stepper button").forEach((b,i)=>{
+    b.setAttribute("aria-current", i===n);
+    b.classList.toggle("done", i<n);
+    b.disabled = !canEnter(i);
+  });
+  if(n===1) renderBin();
+  if(n===2) renderPlans();
+  if(n===3){ S.step = 0; renderBuild(); }
+  window.scrollTo({top:0, behavior:"smooth"});
+  save();
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+document.addEventListener("click", e=>{
+  const t = e.target;
+  const nav = t.closest("[data-go]");
+  if(nav){ go(+nav.dataset.go); return; }
+
+  const sc = t.closest("[data-set]");
+  if(sc){
+    const id = sc.dataset.set;
+    S.sets.has(id) ? S.sets.delete(id) : S.sets.add(id);
+    setsToBin(); renderSets(); save();
+    $$(".stepper button").forEach((b,i)=> b.disabled = !canEnter(i));
+    return;
+  }
+  const inc = t.closest("[data-inc]"), dec = t.closest("[data-dec]");
+  if(inc || dec){
+    const k = (inc||dec).dataset.inc || (inc||dec).dataset.dec;
+    S.bin[k] = Math.max(0, (S.bin[k]||0) + (inc?1:-1));
+    renderBin(); return;
+  }
+  const pc = t.closest("[data-plan]");
+  if(pc){
+    S.planId = pc.dataset.plan;
+    $$("[data-plan]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.plan===S.planId));
+    renderPlanDetail(); save(); return;
+  }
+  const si = t.closest("[data-step]");
+  if(si){ goStep(+si.dataset.step); return; }
+  if(t.closest("#drop")) $("#file").click();
+  if(t.closest("#btn-clear")) setPhoto(null);
+});
+
+document.addEventListener("input", e=>{
+  const n = e.target.closest("[data-num]");
+  if(n){ S.bin[n.dataset.num] = Math.max(0, Math.min(999, parseInt(n.value,10)||0)); save();
+    const s = $("#bin-summary"); if(s){ const tot=binTotal(), kinds=PKEYS.filter(k=>S.bin[k]>0).length, b=LAYOUTS.filter(L=>matchPlan(L).ok).length;
+      s.querySelector(".scanlog").innerHTML = `<b>${tot}</b> pieces · <b>${kinds}</b> of ${PKEYS.length} types<br><b>${b}</b> of ${LAYOUTS.length} layouts buildable right now`; }
+    $$(".stepper button").forEach((btn,i)=> btn.disabled = !canEnter(i));
+  }
+});
+
+document.addEventListener("keydown", e=>{
+  if(S.stage!==3) return;
+  if(e.target.tagName==="INPUT") return;
+  if(e.key==="ArrowRight"){ e.preventDefault(); goStep(S.step+1); }
+  if(e.key==="ArrowLeft"){ e.preventDefault(); goStep(S.step-1); }
+});
+
+$("#btn-cam").onclick = ()=> $("#cam").click();
+$("#btn-file").onclick = ()=> $("#file").click();
+$("#file").onchange = e=>{ if(e.target.files[0]) setPhoto(e.target.files[0]); };
+$("#cam").onchange  = e=>{ if(e.target.files[0]) setPhoto(e.target.files[0]); };
+$("#btn-scan").onclick = runScan;
+$("#skip-sets").onclick = ()=> go(1);
+$("#clear-sets").onclick = ()=>{ S.sets.clear(); setsToBin(); renderSets(); renderBin(); };
+$("#zero-bin").onclick = ()=>{ S.bin = {}; renderBin(); };
+$("#only-buildable").onchange = e=>{ S.onlyBuildable = e.target.checked; renderPlans(); };
+$("#prev").onclick = ()=> goStep(S.step-1);
+$("#next").onclick = ()=> goStep(S.step+1);
+$("#restart").onclick = ()=> goStep(0);
+
+document.addEventListener("dragover", e=>{ if(e.dataTransfer){ e.preventDefault(); const d=$("#drop"); if(d) d.classList.add("over"); } });
+document.addEventListener("dragleave", ()=>{ const d=$("#drop"); if(d) d.classList.remove("over"); });
+document.addEventListener("drop", e=>{
+  e.preventDefault(); const d=$("#drop"); if(d) d.classList.remove("over");
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if(f && f.type.startsWith("image/")) setPhoto(f);
+});
+
+/* the pinned plan must clear the rail, which wraps to two rows on a phone */
+function syncRail(){
+  const r = document.querySelector(".rail");
+  if(r) document.documentElement.style.setProperty("--rail", r.offsetHeight + "px");
+}
+addEventListener("resize", syncRail);
+syncRail();
+
+/* boot */
+load();
+renderSets();
+setPhoto(null);
+go(binTotal()>0 ? 2 : 0);
+initSample();
+</script>
