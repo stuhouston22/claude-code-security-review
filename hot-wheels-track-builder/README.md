@@ -12,8 +12,11 @@ Open `index.html` in a browser. No build step, no dependencies.
    anything it got wrong. Counts are always editable.
 3. **Layouts** — nine layouts, filtered to what your bin can actually build, each
    drawn to scale as a drafting plan and run through an energy check.
-4. **Build guide** — one step per piece, with the new piece highlighted on the plan
-   and the rest of the layout ghosted in so you can see where it is going.
+4. **Build guide** — one step per piece. A step card states the job and the exact
+   parts (with support heights), a zoomed detail inset shows the piece being placed
+   with elevation callouts at both ends, and the full plan beneath shows placed
+   track solid, the current piece haloed, and the rest ghosted in. The last step
+   is a race-ready checklist generated from what the layout actually contains.
 
 ## How a layout is modelled
 
@@ -31,6 +34,18 @@ Segment types: `str` (straight, with drop), `arc` (radius + signed sweep), `loop
 `cork`, `jump`, `cross`, `split`. Lanes can be `pinTo` another lane (branches hanging
 off a splitter) and `interlock` layouts slide one lane until its crossing piece meets
 the other's, so a shared criss-cross really is shared.
+
+## Making it solid
+
+Elevated track sags and twists between props, and a sagging run-in is the usual
+reason a loop that "should" work does not. `supportsFor` places a prop under the end
+of every piece that sits off the floor and every 45 cm along long pieces (the clamp
+holds the start; a loop has its own brace). Props are drawn on the plan as diamonds
+with their height in cm, counted into the kit list, and named in each step.
+
+Two-lane layouts draw the second lane in blue — Hot Wheels sells blue track too — so
+the two builds never get confused on the plan. Joints are marked, and chevrons show
+the direction of travel.
 
 ## The physics
 

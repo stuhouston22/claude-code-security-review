@@ -8,6 +8,7 @@
   --ink:#161A20; --ink-2:#4A515C; --ink-3:#7C8593;
   --line:#D3D8DF; --line-2:#BFC7D1;
   --track:#FF6A00; --ember:#C24A00; --track-soft:#FFE7D6;
+  --track2:#2E7CF6; --ember2:#1B52B8;
   --draft:#6E8CB5;
   --go:#0F8F63; --warn:#A96C00; --fault:#CE2438;
   --go-soft:#DCF3E9; --warn-soft:#FBEDD3; --fault-soft:#FBE0E3;
@@ -23,6 +24,7 @@
     --ink:#EDF0F4; --ink-2:#AAB3BF; --ink-3:#78818E;
     --line:#2A303A; --line-2:#3A414D;
     --track:#FF7C22; --ember:#FFA265; --track-soft:#3B2415;
+    --track2:#4F93FF; --ember2:#9FC2FF;
     --draft:#84A6D2;
     --go:#3DDC97; --warn:#FFC145; --fault:#FF6373;
     --go-soft:#12312A; --warn-soft:#33280F; --fault-soft:#36191F;
@@ -35,6 +37,7 @@
   --ink:#EDF0F4; --ink-2:#AAB3BF; --ink-3:#78818E;
   --line:#2A303A; --line-2:#3A414D;
   --track:#FF7C22; --ember:#FFA265; --track-soft:#3B2415;
+  --track2:#4F93FF; --ember2:#9FC2FF;
   --draft:#84A6D2;
   --go:#3DDC97; --warn:#FFC145; --fault:#FF6373;
   --go-soft:#12312A; --warn-soft:#33280F; --fault-soft:#36191F;
@@ -256,6 +259,18 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 @keyframes draw{from{stroke-dashoffset:1} to{stroke-dashoffset:0}}
 .seg-halo{stroke:var(--track); stroke-width:9; fill:none; opacity:.2; stroke-linecap:round}
 .seg-future{stroke:var(--ink-3); stroke-width:3.4; fill:none; opacity:.16; stroke-linecap:round; stroke-dasharray:3 5}
+.l1.seg-base,.l2.seg-base{stroke:var(--ember2)}
+.l1.seg-face,.l2.seg-face{stroke:var(--track2)}
+.l1.seg-halo,.l2.seg-halo{stroke:var(--track2)}
+.joint{fill:var(--sheet); stroke:var(--ember); opacity:.95}
+.l1.joint,.l2.joint{stroke:var(--ember2)}
+.chev{fill:none; stroke:var(--sheet); stroke-linecap:round; stroke-linejoin:round; opacity:.85}
+.sup{fill:var(--ink); stroke:var(--sheet)}
+.sup.ghost{opacity:.18}
+.suptxt{fill:var(--ink-2); font-family:var(--mono); font-weight:600; paint-order:stroke; stroke:var(--sheet); stroke-width:1.2; stroke-linejoin:round}
+.elev{fill:var(--draft); font-family:var(--mono); font-weight:700; paint-order:stroke; stroke:var(--sheet); stroke-width:1.4; stroke-linejoin:round}
+.elevline{stroke:var(--draft); stroke-dasharray:1.2 1.2; opacity:.8}
+.slope{fill:var(--ink-2); font-family:var(--mono)}
 .dimline{stroke:var(--draft); opacity:.7}
 .dimtext{fill:var(--draft); font-family:var(--mono); letter-spacing:.04em}
 .gridline{stroke:var(--grid)}
@@ -291,7 +306,7 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 /* ---------- build steps ---------- */
 .steplist{position:relative; display:flex; flex-direction:column; gap:0; max-height:min(58vh,560px); overflow-y:auto}
 @media (max-width:1080px){
-  #s3 .col-b{position:sticky; top:var(--rail,56px); z-index:12; background:var(--ground); padding-bottom:10px}
+  #s3 .bg-sheet{position:sticky; top:var(--rail,56px); z-index:12; background:var(--ground); padding-bottom:10px}
   #s3 .sheet svg{max-height:30vh}
   #s3 .profile{display:none}
   #s3 .readout{display:none}
@@ -320,6 +335,55 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 }
 .stepitem[aria-current="true"] .tip{background:var(--panel-3)}
 
+.buildgrid{display:grid; grid-template-columns:minmax(290px,350px) 1fr minmax(280px,340px); grid-template-areas:"list step inset" "list sheet sheet"; gap:20px; align-items:start}
+.bg-list{grid-area:list} .bg-sheet{grid-area:sheet} .bg-step{grid-area:step; height:100%} .bg-inset{grid-area:inset; height:100%}
+.bg-step .stepcard{height:100%}
+#s3 .sheet svg{max-height:min(50vh,520px)}
+@media (max-width:1080px){
+  .buildgrid{grid-template-columns:1fr; grid-template-areas:"sheet" "step" "inset" "list"}
+}
+.stepcard{background:var(--panel); border:1px solid var(--line); border-radius:5px; box-shadow:var(--shadow); display:flex; flex-direction:column}
+.stepcard .sc-body{padding:18px 20px 16px; display:flex; flex-direction:column; gap:12px; flex:1}
+.sc-head{display:flex; gap:14px; align-items:flex-start}
+.sc-no{
+  font-family:var(--display); font-weight:800; font-variation-settings:"wdth" 110; font-size:30px; line-height:1;
+  min-width:52px; height:52px; padding:0 8px; border-radius:3px; display:grid; place-items:center;
+  background:var(--track); color:#fff; box-shadow:inset 0 -3px 0 rgba(0,0,0,.22); flex:0 0 auto;
+}
+.sc-no.l1{background:var(--track2)}
+.sc-no.done{background:var(--go)}
+.sc-head h3{font-size:21px; font-weight:800; margin-top:4px}
+.sc-d{font-size:14.5px; line-height:1.55; color:var(--ink); max-width:60ch}
+.sc-parts{display:flex; flex-wrap:wrap; gap:8px}
+.partchip{
+  display:inline-flex; align-items:center; gap:8px; padding:6px 10px 6px 7px;
+  border:1px solid var(--line-2); border-radius:3px; background:var(--panel-2);
+  font-family:var(--mono); font-size:12px; font-weight:600;
+}
+.partchip .glyph{width:30px; height:21px}
+.partchip small{font-weight:500; color:var(--ink-3)}
+.sc-tip{font-size:13px; color:var(--ink-2); padding:9px 12px; border-left:2px solid var(--draft); background:var(--panel-2); border-radius:0 3px 3px 0; line-height:1.5}
+.sc-tip b{color:var(--ink); font-weight:600}
+.sc-nav{display:flex; align-items:center; gap:12px; padding:12px 16px; border-top:1px solid var(--line); background:var(--panel-2)}
+.sc-nav .prog{flex:1; min-width:50px}
+.sc-nav .cnt{font-family:var(--mono); font-size:12px; font-variant-numeric:tabular-nums; color:var(--ink-3); white-space:nowrap}
+.inset{background:var(--sheet); border:1px solid var(--line); border-radius:5px; box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; height:100%}
+.inset > header{padding:9px 13px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:8px}
+.inset > header h3{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-variation-settings:"wdth" 110}
+.inset > header span{margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--ink-3); letter-spacing:.06em}
+.inset svg{display:block; width:100%; height:auto; flex:1}
+.phase{
+  display:flex; align-items:center; gap:10px; padding:9px 14px 7px; border-bottom:1px solid var(--line);
+  background:var(--panel-2); font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3); position:sticky; top:0; z-index:2;
+}
+.phase i{display:inline-block; width:10px; height:10px; border-radius:2px; background:var(--track)}
+.phase i.l1,.phase i.l2{background:var(--track2)}
+.checks-list{display:flex; flex-direction:column; gap:7px}
+.ck{display:flex; gap:10px; align-items:flex-start; font-size:13.5px; line-height:1.45; cursor:pointer; padding:7px 10px; border:1px solid var(--line); border-radius:3px; background:var(--panel-2)}
+.ck input{margin-top:3px; flex:0 0 auto}
+.ck.on{border-color:color-mix(in srgb,var(--go) 40%,var(--line)); background:var(--go-soft)}
+.ck.on span{text-decoration:line-through; color:var(--ink-3)}
 .navbar{display:flex; align-items:center; gap:12px; padding:12px 14px; border-top:1px solid var(--line); background:var(--panel-2)}
 .navbar .prog{flex:1; min-width:60px}
 .navbar .cnt{font-family:var(--mono); font-size:12px; font-variant-numeric:tabular-nums; color:var(--ink-3); white-space:nowrap}
@@ -461,23 +525,19 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
     <h2 id="s3h" style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><span id="build-title">Build guide</span> <span class="chip" id="build-chip"></span></h2>
     <p id="build-sub"></p>
   </div>
-  <div class="split plan-first">
-    <div class="col-a">
-      <div class="card">
-        <header><h3>Steps</h3><span class="hint">← → to move</span></header>
-        <div class="steplist" id="steplist"></div>
-        <div class="navbar">
-          <button class="btn" id="prev">Back</button>
-          <div class="prog"><div class="bar"><i id="progbar" style="width:0%"></i></div></div>
-          <span class="cnt" id="stepcount">0 / 0</span>
-          <button class="btn primary" id="next">Next</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-b" style="display:flex; flex-direction:column; gap:16px">
+  <div class="buildgrid">
+    <div class="bg-sheet">
       <div class="sheet">
         <div class="plate" id="build-plate"></div>
         <div class="readout" id="build-readout"></div>
+      </div>
+    </div>
+    <div class="bg-step"><div class="stepcard" id="stepcard"></div></div>
+    <div class="bg-inset"><div class="inset" id="inset"></div></div>
+    <div class="bg-list">
+      <div class="card">
+        <header><h3>All steps</h3><span class="hint">← → to move</span></header>
+        <div class="steplist" id="steplist"></div>
       </div>
     </div>
   </div>
@@ -688,6 +748,68 @@ const LAYOUTS = [
   ],
   notes:["Mark the calculated landing point on the floor with tape before you place the ramp. Move the ramp, never the launcher."]},
 
+{ id:"dragstrip", nm:"Launch Drag Strip", cls:"dual", skill:"Beginner",
+  blurb:"No table, no height — two spring launchers side by side on the floor and two metres of straight. The most repeatable race in the box because nothing depends on how you dropped the car.",
+  lanes:[
+    {name:"Lane A", origin:{x:0,y:0,hdg:0,z:0}, start:{kind:"launcher",mount:"floor"}, segs:[
+      {t:"str",len:68,drop:0,label:"Launch straight"},
+      {t:"str",len:68,drop:0,label:"Middle straight"},
+      {t:"str",len:68,drop:0,label:"Finish straight"}]},
+    {name:"Lane B", origin:{x:0,y:20,hdg:0,z:0}, start:{kind:"launcher",mount:"floor"}, segs:[
+      {t:"str",len:68,drop:0,label:"Launch straight"},
+      {t:"str",len:68,drop:0,label:"Middle straight"},
+      {t:"str",len:68,drop:0,label:"Finish straight"}]}
+  ],
+  notes:["Pull both launchers to the same notch, every time. A consistent launch beats a hard launch."]},
+
+{ id:"boostersprint", nm:"Booster Sprint", cls:"dual", skill:"Beginner",
+  blurb:"Two motorised boosters fire two cars down parallel lanes. Flat floor, battery power, identical lanes — the result is the car, not the track.",
+  lanes:[
+    {name:"Lane A", origin:{x:0,y:0,hdg:0,z:0}, start:{kind:"booster",mount:"floor"}, segs:[
+      {t:"str",len:34,drop:0,label:"Booster feed"},
+      {t:"str",len:68,drop:0,label:"Sprint straight"},
+      {t:"str",len:68,drop:0,label:"Finish straight"}]},
+    {name:"Lane B", origin:{x:0,y:20,hdg:0,z:0}, start:{kind:"booster",mount:"floor"}, segs:[
+      {t:"str",len:34,drop:0,label:"Booster feed"},
+      {t:"str",len:68,drop:0,label:"Sprint straight"},
+      {t:"str",len:68,drop:0,label:"Finish straight"}]}
+  ],
+  notes:["Swap the boosters between lanes after a few races. If one lane keeps winning, it is the booster, not the car."]},
+
+{ id:"jumpduel", nm:"Jump Duel", cls:"dual", skill:"Intermediate",
+  blurb:"Two lanes, two jumps, one landing zone. Both cars leave the ground at the same instant — whichever lands straight wins.",
+  lanes:[
+    {name:"Lane A", origin:{x:0,y:0,hdg:0,z:65}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Drop-in"},
+      {t:"str",len:34,drop:23,label:"Acceleration ramp"},
+      {t:"str",len:34,drop:10,label:"Approach"},
+      {t:"jump",gap:55,rise:14,label:"Launch ramp & air gap"},
+      {t:"str",len:34,drop:4,label:"Landing run"},
+      {t:"str",len:68,drop:4,label:"Run-out"}]},
+    {name:"Lane B", origin:{x:0,y:26,hdg:0,z:65}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:24,label:"Drop-in"},
+      {t:"str",len:34,drop:23,label:"Acceleration ramp"},
+      {t:"str",len:34,drop:10,label:"Approach"},
+      {t:"jump",gap:55,rise:14,label:"Launch ramp & air gap"},
+      {t:"str",len:34,drop:4,label:"Landing run"},
+      {t:"str",len:68,drop:4,label:"Run-out"}]}
+  ],
+  notes:["Tape both landing ramps down at the calculated distance. Lane width matters here: 26 cm apart keeps a crooked landing from crossing into the other lane."]},
+
+{ id:"hairpinduel", nm:"Hairpin Duel", cls:"dual", skill:"Intermediate",
+  blurb:"Two cars start side by side, hairpin away from each other and race back toward the start. The finish is next to the launch, so everyone sees both ends.",
+  lanes:[
+    {name:"Lane A", origin:{x:0,y:8,hdg:0,z:59}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:23,label:"Drop-in"},
+      {t:"arc",r:34,deg:180,drop:24,label:"Right hairpin"},
+      {t:"str",len:68,drop:12,label:"Return straight"}]},
+    {name:"Lane B", origin:{x:0,y:-8,hdg:0,z:59}, start:{kind:"gravity",mount:"clamp"}, segs:[
+      {t:"str",len:34,drop:23,label:"Drop-in"},
+      {t:"arc",r:34,deg:-180,drop:24,label:"Left hairpin"},
+      {t:"str",len:68,drop:12,label:"Return straight"}]}
+  ],
+  notes:["The two hairpins are mirror images. Build one, measure its support heights, then copy them exactly to the other side."]},
+
 { id:"gpoval", nm:"Grand Prix Oval", cls:"dual", skill:"Advanced", closed:true,
   blurb:"A two-lane booster-driven oval that runs continuously — lap racing rather than one-shot drag racing. The outer lane is longer, so the app works out the stagger for you.",
   lanes:[
@@ -738,7 +860,8 @@ function arcPoly(p0,c,deg,steps){
 }
 
 /* Walk one lane's segments from a starting pose. */
-function walkLane(lane, pose){
+function walkLane(lane, pose, li){
+  const side = (li||0)%2===0 ? -90 : 90;   // alternate lanes draw loops on opposite sides
   let p = {x:pose.x, y:pose.y}, hdg = pose.hdg, z = pose.z;
   const nodes = [];
   for(const s of lane.segs){
@@ -760,8 +883,8 @@ function walkLane(lane, pose){
       const end = fwd(p,hdg,s.r*2);
       n.d = `M ${f1(p.x)} ${f1(p.y)} L ${f1(end.x)} ${f1(end.y)}`;
       n.poly.push(end); n.run = s.r*2*1.4;
-      const mid = fwd(p,hdg,s.r), cc = fwd(mid, hdg-90, s.r*1.15);
-      n.glyphs.push({kind:"loop", x:cc.x, y:cc.y, r:s.r*0.78, from:mid, txt:`LOOP ⌀${Math.round(s.r*2)}`});
+      const mid = fwd(p,hdg,s.r), cc = fwd(mid, hdg+side, s.r*1.15);
+      n.glyphs.push({kind:"loop", x:cc.x, y:cc.y, r:s.r*0.78, from:mid, below:side>0, txt:`LOOP ⌀${Math.round(s.r*2)}`});
       p = end;
     }
     else if(s.t==="cork"){
@@ -802,14 +925,14 @@ function walkLayout(L){
     let pose;
     if(lane.pinTo!=null) pose = {...lanes[lane.pinTo].end};
     else pose = {...lane.origin};
-    let w = walkLane(lane, pose);
+    let w = walkLane(lane, pose, i);
     // interlocking layouts: slide this lane so its crossing meets the first lane's
     if(L.interlock && i>0){
       const mine = w.nodes.find(n=>n.seg.t==="cross");
       const base = lanes[0] && lanes[0].nodes.find(n=>n.seg.t==="cross");
       if(mine && base){
         pose = {...pose, x:pose.x + (base.from.x-mine.from.x), y:pose.y + (base.from.y-mine.from.y)};
-        w = walkLane(lane, pose);
+        w = walkLane(lane, pose, i);
       }
     }
     lanes.push({...w, name:lane.name, def:lane, pose});
@@ -822,6 +945,50 @@ function walkLayout(L){
   })));
   const bb = {x0:Math.min(...xs), x1:Math.max(...xs), y0:Math.min(...ys), y1:Math.max(...ys)};
   return {lanes, bb, w:bb.x1-bb.x0, h:bb.y1-bb.y0};
+}
+
+/* ============================================================
+   SUPPORT PLACEMENT
+   Elevated track sags and twists between props. Rule used here:
+   a prop under the end of every piece that sits off the floor,
+   plus one every 45 cm along a long piece. The start is held by
+   the clamp, a loop by its own brace.
+   ============================================================ */
+const SUP_SPACING = 45, SUP_MIN_Z = 9;
+function alongPoly(pts){
+  const lens=[]; let total=0;
+  for(let i=1;i<pts.length;i++){ const d=Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y); lens.push(d); total+=d; }
+  return {
+    total,
+    at(f){
+      let t=f*total;
+      for(let i=0;i<lens.length;i++){
+        if(t<=lens[i] || i===lens.length-1){
+          const u = lens[i] ? Math.min(1,t/lens[i]) : 0;
+          return {x:pts[i].x+(pts[i+1].x-pts[i].x)*u, y:pts[i].y+(pts[i+1].y-pts[i].y)*u};
+        }
+        t-=lens[i];
+      }
+      return pts[pts.length-1];
+    }
+  };
+}
+function supportsFor(geo){
+  const out = [];
+  geo.lanes.forEach((lane, li)=>{
+    lane.nodes.forEach(n=>{
+      if(!n.run || n.air || n.zero || n.seg.t==="loop") return;
+      const ap = alongPoly(n.poly);
+      const marks = [];
+      for(let d=SUP_SPACING; d < ap.total-12; d+=SUP_SPACING) marks.push(d/ap.total);
+      marks.push(1);
+      marks.forEach(f=>{
+        const z = n.zIn + (n.zOut-n.zIn)*f;
+        if(z >= SUP_MIN_Z){ const q = ap.at(f); out.push({x:q.x, y:q.y, z:Math.round(z), gi:n.gi, li, end:f===1}); }
+      });
+    });
+  });
+  return out.filter((q,i)=> !out.slice(0,i).some(o=> Math.hypot(o.x-q.x,o.y-q.y) < 6));
 }
 
 /* ============================================================
@@ -839,25 +1006,23 @@ function segPieces(s){
   }
   return {};
 }
-function requirements(L){
+function requirements(L, geo){
   const need = {};
   const add = (k,n)=>{ if(n>0) need[k]=(need[k]||0)+n; };
   let joints = 0;
   L.lanes.forEach(lane=>{
-    let dz = 0, mounted = false;
     lane.segs.forEach(s=>{
-      dz += (s.drop||0);
       if(!s.shared){ const p=segPieces(s); for(const k in p) add(k,p[k]); }
-      if(!s.zero) joints++;
+      if(s.t!=="cross" && s.t!=="split") joints++;
     });
     if(lane.start){
       if(lane.start.kind==="launcher") add("launcher",1);
       if(lane.start.kind==="booster")  add("booster",1);
-      if(lane.start.mount==="clamp"){ add("clamp",1); mounted = true; }
+      if(lane.start.mount==="clamp")   add("clamp",1);
     }
-    if(dz>40) add("support", Math.max(1, Math.round(dz/46) - (mounted?1:0)));
   });
   add("connector", Math.max(0, joints - L.lanes.length));
+  add("support", (geo && geo.supports ? geo.supports.length : 0));
   return need;
 }
 
@@ -1003,13 +1168,15 @@ function drawSheet(L, geo, opt){
     if(n.air){
       airs += `<path class="seg air" stroke-width="${f1(k*.55)}" stroke-dasharray="${f1(k*1.6)} ${f1(k*1.6)}" d="${n.d}"/>`;
     } else {
+      const lc = ` l${n.li}`;
       shadows += `<path class="seg seg-shadow" transform="translate(${f1(k*.35)},${f1(k*.5)})" d="${n.d}"/>`;
-      if(isNew) halos += `<path class="seg seg-halo" stroke-width="${f1(k*3.4)}" d="${n.d}"/>`;
-      bases   += `<path class="seg seg-base${isNew?" new":""}"${isNew?' pathLength="1"':""} d="${n.d}"/>`;
-      faces   += `<path class="seg seg-face${isNew?" new":""}"${isNew?' pathLength="1"':""} d="${n.d}"/>`;
+      if(isNew) halos += `<path class="seg seg-halo${lc}" stroke-width="${f1(k*3.4)}" d="${n.d}"/>`;
+      bases   += `<path class="seg seg-base${lc}${isNew?" new":""}"${isNew?' pathLength="1"':""} d="${n.d}"/>`;
+      faces   += `<path class="seg seg-face${lc}${isNew?" new":""}"${isNew?' pathLength="1"':""} d="${n.d}"/>`;
     }
   }
   g += `<g>${futures}</g><g>${shadows}</g><g>${halos}</g><g>${bases}</g><g>${faces}</g><g>${airs}</g>`;
+  g += `<g>${sheetMarks(geo, all, {k, fs, hair, reveal, cur, labels:opt.supportLabels!==false})}</g>`;
 
   /* glyphs: loops, crossings, splitters, tags */
   let gl = "";
@@ -1019,9 +1186,10 @@ function drawSheet(L, geo, opt){
     for(const q of n.glyphs){
       if(q.kind==="loop"){
         gl += `<line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(q.from.x)}" y1="${f1(q.from.y)}" x2="${f1(q.x)}" y2="${f1(q.y)}"/>`;
-        gl += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="var(--ember)" stroke-width="${f1(k*.5)}"/>`;
-        gl += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="var(--track)" stroke-width="${f1(k*.3)}"${isNew?' class="seg new"':''}/>`;
-        gl += `<text class="glyphlbl" font-size="${f1(fs*.72)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y - q.r - fs*.5)}">${esc(q.txt)}</text>`;
+        const c1 = n.li>0 ? "var(--ember2)" : "var(--ember)", c2 = n.li>0 ? "var(--track2)" : "var(--track)";
+        gl += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="${c1}" stroke-width="${f1(k*.5)}"/>`;
+        gl += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="${c2}" stroke-width="${f1(k*.3)}"${isNew?' class="seg new"':''}/>`;
+        gl += `<text class="glyphlbl" font-size="${f1(fs*.72)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.below ? q.y + q.r + fs*1.1 : q.y - q.r - fs*.5)}">${esc(q.txt)}</text>`;
       } else if(q.kind==="cross"){
         gl += `<g transform="rotate(${f1(q.hdg)} ${f1(q.x)} ${f1(q.y)})">
           <rect x="${f1(q.x-k*1.5)}" y="${f1(q.y-k*1.5)}" width="${f1(k*3)}" height="${f1(k*3)}" fill="var(--sheet)" stroke="var(--draft)" stroke-width="${f1(hair*2)}"/></g>`;
@@ -1081,6 +1249,115 @@ function drawSheet(L, geo, opt){
   return `<svg viewBox="0 0 ${f1(W)} ${f1(H)}" role="img" aria-label="${esc(opt.alt||L.nm+" track plan")}">
     <rect width="${f1(W)}" height="${f1(H)}" fill="var(--sheet)"/>
     <g transform="translate(${f1(ox)},${f1(oy)})">${g}</g></svg>`;
+}
+
+/* Joints, direction chevrons, support props and elevation callouts.
+   Shared by the main sheet and the detail inset. */
+function midHeading(n){
+  const s = n.seg;
+  return s.t==="arc" ? n.hdgIn + s.deg/2 : n.hdgIn;
+}
+function sheetMarks(geo, nodes, o){
+  const {k, fs, hair, reveal, cur} = o;
+  let joints="", chevs="", sups="", elev="";
+  const placed = n => (reveal==null || n.gi <= reveal);
+  for(const n of nodes){
+    if(!placed(n) || !n.run || n.zero) continue;
+    const lane = geo.lanes[n.li];
+    const first = lane.nodes[0] === n;
+    // joint at the start of every piece after the first in its lane
+    if(!first && !n.air)
+      joints += `<circle class="joint l${n.li}" cx="${f1(n.from.x)}" cy="${f1(n.from.y)}" r="${f1(k*.62)}" stroke-width="${f1(hair*2.2)}"/>`;
+    // travel direction on anything long enough to read
+    if(n.run >= 30 && !n.air){
+      const ap = alongPoly(n.poly), m = ap.at(0.5), h = midHeading(n);
+      chevs += `<path class="chev" stroke-width="${f1(k*.42)}" transform="translate(${f1(m.x)},${f1(m.y)}) rotate(${f1(h)}) scale(${f1(k*.42)})" d="M -1.3 -1.6 L 0.4 0 L -1.3 1.6"/>`;
+    }
+  }
+  // support props, with their heights — the thing that makes a build solid
+  (geo.supports||[]).forEach(q=>{
+    const on = (reveal==null || q.gi <= reveal);
+    const isCur = (cur!=null && q.gi === cur);
+    const sz = k*1.45;
+    sups += `<rect class="sup${on?"":" ghost"}" x="${f1(q.x-sz/2)}" y="${f1(q.y-sz/2)}" width="${f1(sz)}" height="${f1(sz)}" stroke-width="${f1(hair*2)}" transform="rotate(45 ${f1(q.x)} ${f1(q.y)})"/>`;
+    if(on && o.labels)
+      sups += `<text class="suptxt" font-size="${f1(fs*.62)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y + sz*1.05 + fs*.55)}"${isCur?' style="fill:var(--track)"':''}>${q.z}</text>`;
+  });
+  // elevation at both ends of the piece being placed
+  if(cur!=null){
+    const n = nodes.find(x=>x.gi===cur);
+    if(n && n.run && !n.zero){
+      const tag = (p, z, hdg)=>{
+        const off = fwd(p, hdg + 90, k*4.6);
+        const below = Math.sin((hdg+90)*RAD) >= 0;      // leader points down-screen → text under it
+        return `<line class="elevline" stroke-width="${f1(hair*2)}" x1="${f1(p.x)}" y1="${f1(p.y)}" x2="${f1(off.x)}" y2="${f1(off.y)}"/>
+          <text class="elev" font-size="${f1(fs*.74)}" text-anchor="middle" x="${f1(off.x)}" y="${f1(off.y + (below ? fs*.95 : -fs*.4))}">${Math.round(z)} cm</text>`;
+      };
+      elev += tag(n.from, n.zIn, n.hdgIn) + tag(n.to, n.zOut, n.hdgOut);
+    }
+  }
+  return `<g>${joints}</g><g>${chevs}</g><g>${sups}</g><g>${elev}</g>`;
+}
+
+/* Zoomed callout of the piece being placed — the Lego "look here" box */
+function drawDetail(L, geo, node){
+  if(!node) return "";
+  const xs = node.poly.map(q=>q.x), ys = node.poly.map(q=>q.y);
+  node.glyphs.forEach(q=>{ const r=(q.r||12)+6; xs.push(q.x-r,q.x+r); ys.push(q.y-r,q.y+r); });
+  let x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys);
+  const span = Math.max(x1-x0, y1-y0, 36);
+  const m = span*.42 + 10;
+  x0-=m; x1+=m; y0-=m; y1+=m;
+  // settle on a 4:3 window around it
+  let W = x1-x0, H = y1-y0;
+  if(W/H > 4/3){ const h2 = W*3/4; y0 -= (h2-H)/2; H = h2; } else { const w2 = H*4/3; x0 -= (w2-W)/2; W = w2; }
+  const k = W/42, fs = W/30, hair = W/420;
+  const all = []; geo.lanes.forEach(l=> l.nodes.forEach(n=> all.push(n)));
+  all.sort((a,b)=>a.gi-b.gi);
+  let g = "";
+  const step = 20;
+  for(let x=Math.ceil(x0/step)*step; x<=x0+W; x+=step) g += `<line class="gridline" stroke-width="${f1(hair)}" x1="${f1(x)}" y1="${f1(y0)}" x2="${f1(x)}" y2="${f1(y0+H)}"/>`;
+  for(let y=Math.ceil(y0/step)*step; y<=y0+H; y+=step) g += `<line class="gridline" stroke-width="${f1(hair)}" x1="${f1(x0)}" y1="${f1(y)}" x2="${f1(x0+W)}" y2="${f1(y)}"/>`;
+  let futures="", shadows="", halos="", bases="", faces="", airs="";
+  for(const n of all){
+    if(!n.d) continue;
+    if(n.gi > node.gi){ futures += `<path class="seg seg-future" stroke-width="${f1(k*.5)}" d="${n.d}"/>`; continue; }
+    const isNew = n.gi === node.gi, lc = ` l${n.li}`;
+    if(n.air){ airs += `<path class="seg air" stroke-width="${f1(k*.55)}" stroke-dasharray="${f1(k*1.6)} ${f1(k*1.6)}" d="${n.d}"/>`; continue; }
+    shadows += `<path class="seg seg-shadow" transform="translate(${f1(k*.35)},${f1(k*.5)})" d="${n.d}"/>`;
+    if(isNew) halos += `<path class="seg seg-halo${lc}" stroke-width="${f1(k*3.4)}" d="${n.d}"/>`;
+    bases += `<path class="seg seg-base${lc}" d="${n.d}"/>`;
+    faces += `<path class="seg seg-face${lc}" d="${n.d}"/>`;
+  }
+  g += `<g>${futures}</g><g>${shadows}</g><g>${halos}</g><g>${bases}</g><g>${faces}</g><g>${airs}</g>`;
+  for(const q of node.glyphs){
+    if(q.kind==="loop"){
+      const c1 = node.li>0 ? "var(--ember2)" : "var(--ember)", c2 = node.li>0 ? "var(--track2)" : "var(--track)";
+      g += `<line class="dimline" stroke-width="${f1(hair*1.6)}" x1="${f1(q.from.x)}" y1="${f1(q.from.y)}" x2="${f1(q.x)}" y2="${f1(q.y)}"/>
+        <circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="${c1}" stroke-width="${f1(k*.5)}"/>
+        <circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(q.r)}" fill="none" stroke="${c2}" stroke-width="${f1(k*.3)}"/>`;
+    } else if(q.kind==="cross"){
+      g += `<g transform="rotate(${f1(q.hdg)} ${f1(q.x)} ${f1(q.y)})"><rect x="${f1(q.x-k*1.5)}" y="${f1(q.y-k*1.5)}" width="${f1(k*3)}" height="${f1(k*3)}" fill="var(--sheet)" stroke="var(--draft)" stroke-width="${f1(hair*2)}"/></g>`;
+    } else if(q.kind==="split"){
+      g += `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(k*1.5)}" fill="var(--sheet)" stroke="var(--draft)" stroke-width="${f1(hair*2)}"/>`;
+    }
+  }
+  g += sheetMarks(geo, all, {k, fs, hair, reveal:node.gi, cur:node.gi, labels:true});
+  // slope or geometry note at the middle of the piece
+  const sg = node.seg;
+  if(node.run && !node.zero){
+    const ap = alongPoly(node.poly), mid = ap.at(0.5);
+    let note = "";
+    if(sg.t==="str") note = (sg.drop||0) > 0 ? `${Math.round(Math.asin(Math.min(1,(sg.drop||0)/sg.len))/RAD)}° SLOPE` : "LEVEL";
+    else if(sg.t==="arc") note = `R ${sg.r} · ${Math.abs(sg.deg)}°`;
+    else if(sg.t==="loop") note = `LOOP ⌀${sg.r*2}`;
+    else if(sg.t==="jump") note = `AIR ${sg.gap} CM`;
+    else if(sg.t==="cork") note = "CORKSCREW";
+    const lp = fwd(mid, midHeading(node) + 90, k*3.4);
+    g += `<text class="slope" font-size="${f1(fs*.72)}" text-anchor="middle" x="${f1(lp.x)}" y="${f1(lp.y + fs*.3)}">${esc(note)}</text>`;
+  }
+  return `<svg viewBox="${f1(x0)} ${f1(y0)} ${f1(W)} ${f1(H)}" role="img" aria-label="Detail of ${esc(sg.label||"this piece")}">
+    <rect x="${f1(x0)}" y="${f1(y0)}" width="${f1(W)}" height="${f1(H)}" fill="var(--sheet)"/>${g}</svg>`;
 }
 
 /* Elevation profile strip — only worth drawing when the layout descends */
@@ -1146,7 +1423,7 @@ function setsToBin(){
    MATCHING + CHECKS
    ============================================================ */
 function matchPlan(L){
-  const req = requirements(L);
+  const req = compute(L).req;
   let have=0, tot=0; const missing=[];
   for(const k in req){
     tot += req[k];
@@ -1209,7 +1486,7 @@ function buildChecks(L, geo, an){
   else if(an.startH > 0)
     add("pass","MOUNT", `<b>Start height ${Math.round(an.startH)} cm</b> — a standard dining table or desk edge will do it.`);
 
-  if(requirements(L).booster)
+  if(compute(L).req.booster)
     add("pass","POWERED", `<b>Boosters carry this layout</b>, so gravity is not the limit — but fit fresh batteries. A booster at 70% output drops lap speed by roughly a quarter.`);
 
   add("pass","SPACE", `<b>Clear floor needed: ${Math.round(geo.w)} × ${Math.round(geo.h)} cm</b> plus about 30 cm of run-off past the finish so cars stop on the track, not the skirting board.`);
@@ -1229,18 +1506,25 @@ const TIPS = {
 };
 function stepsFor(L, geo, an, req){
   const steps = [];
-  const clamps = req.clamp||0, supports = req.support||0;
+  const partsOf = obj => Object.keys(obj).map(k=>({k, n:obj[k]}));
+  const useStr = parts => parts.map(x=>`${x.n} × ${PIECES[x.k].nm}${x.note?` (${x.note})`:""}`).join(" · ");
+  const prepParts = [];
+  if(req.clamp)    prepParts.push({k:"clamp", n:req.clamp, note:an.startH>0?`at ${Math.round(an.startH)} cm`:""});
+  if(req.launcher) prepParts.push({k:"launcher", n:req.launcher});
+  if(req.booster)  prepParts.push({k:"booster", n:req.booster, note:"fresh batteries"});
+  if(req.support)  prepParts.push({k:"support", n:req.support, note:`tallest ${Math.max(...geo.supports.map(q=>q.z))} cm`});
   steps.push({
-    kind:"prep", reveal:-1,
-    t:"Set out the site",
-    d:`Clear a floor area of about ${Math.round(geo.w)} × ${Math.round(geo.h)} cm. Lay out every piece from the kit list within reach before you join anything — hunting for a connector mid-build is how alignment gets lost.`,
-    use: [clamps?`${clamps} clamp${clamps>1?"s":""}`:null, supports?`${supports} support column${supports>1?"s":""}`:null].filter(Boolean).join(" · "),
-    tip: an.startH>0 ? `Fix your clamps first, at ${Math.round(an.startH)} cm. Everything else is measured down from them.` : "Boosters go down first — everything else is aligned to them."
+    kind:"prep", reveal:-1, lane:-1, phase:"Set up",
+    t:"Set out the site", parts:prepParts, use:useStr(prepParts),
+    d:`Clear ${Math.round(geo.w)} × ${Math.round(geo.h)} cm of floor and lay every piece from the kit list within reach. ${an.startH>0?`Fix the clamp${req.clamp>1?"s":""} first at ${Math.round(an.startH)} cm — every height in this guide is measured down from there.`:"Put the power pieces down first — everything else lines up to them."}`,
+    tip: req.support ? `The diamonds on the plan are support props, with their heights in cm. Set each one as its piece goes down, not at the end — track that is propped as you go stays where you drew it.` : "No supports needed: this one lives on the floor."
   });
   geo.lanes.forEach((lane,li)=>{
     lane.nodes.forEach((n,ni)=>{
-      const s = n.seg, p = segPieces(s);
-      const use = Object.keys(p).map(k=>`${p[k]} × ${PIECES[k].nm}`).join(" · ");
+      const s = n.seg, parts = partsOf(segPieces(s));
+      const sup = geo.supports.filter(q=>q.gi===n.gi);
+      if(sup.length) parts.push({k:"support", n:sup.length, note:`at ${sup.map(q=>q.z).join(", ")} cm`});
+      if(ni>0 && !n.zero && !n.air) parts.push({k:"connector", n:1});
       let tip = null;
       if(s.t==="loop") tip = TIPS.loop;
       else if(s.t==="jump") tip = TIPS.jump;
@@ -1248,28 +1532,49 @@ function stepsFor(L, geo, an, req){
       else if(s.t==="split") tip = TIPS.split;
       else if(s.t==="cork") tip = TIPS.cork;
       else if(s.t==="arc" && Math.abs(s.deg)>=180) tip = TIPS.hairpin;
-      else if(ni===0) tip = "Clamp this piece before adding the next one. A ramp built from the bottom up never ends up where you drew it.";
+      else if(ni===0 && lane.def.start && lane.def.start.mount==="clamp") tip = "Clamp this piece before adding the next one. A ramp built from the bottom up never ends up where you drew it.";
+      else if(sup.length) tip = `Prop the far end at ${sup[sup.length-1].z} cm and sight along the piece — it should be dead straight with no twist before you add the next one.`;
       let d;
-      if(s.t==="str") d = `Run ${s.len} cm of straight track, dropping ${s.drop||0} cm over that length${(s.drop||0)>0?` — about ${Math.round(Math.asin(Math.min(1,(s.drop||0)/s.len))/RAD)}° of slope`:", dead level"}.`;
-      else if(s.t==="arc") d = `Curve ${Math.abs(s.deg)}° to the ${s.deg>0?"right":"left"} on a ${s.r} cm radius${(s.drop||0)>0?`, losing ${s.drop} cm of height`:""}.`;
-      else if(s.t==="loop") d = `Stand the ${s.r*2} cm loop on the run-in and lock its brace. Feed the exit back onto the floor line.`;
-      else if(s.t==="cork") d = `Fit the corkscrew across ${s.len} cm, dropping ${s.drop} cm through the twist.`;
-      else if(s.t==="jump") d = `Set the launch ramp, then leave a ${s.gap} cm gap before the landing run.`;
-      else if(s.t==="cross") d = `Seat the criss-cross piece where the two lanes meet, flat on the floor.`;
+      const slope = (sg)=> Math.round(Math.asin(Math.min(1,(sg.drop||0)/sg.len))/RAD);
+      if(s.t==="str") d = `Join ${Math.max(1,Math.round(s.len/STRAIGHT_CM))} straight${s.len>40?"s":""} (${s.len} cm) and ${(s.drop||0)>0?`drop ${s.drop} cm along them — a ${slope(s)}° slope. Far end sits at ${Math.round(n.zOut)} cm.`:"keep them dead level on the floor."}`;
+      else if(s.t==="arc") d = `Curve ${Math.abs(s.deg)}° to the ${s.deg>0?"right":"left"} on a ${s.r} cm radius${(s.drop||0)>0?`, losing ${s.drop} cm through the bend. Exit sits at ${Math.round(n.zOut)} cm.`:", flat."}`;
+      else if(s.t==="loop") d = `Stand the ${s.r*2} cm loop on the run-in and lock its brace. The exit joins the floor line at ${Math.round(n.zOut)} cm.`;
+      else if(s.t==="cork") d = `Fit the corkscrew across ${s.len} cm, dropping ${s.drop} cm through the twist to ${Math.round(n.zOut)} cm.`;
+      else if(s.t==="jump") d = `Set the launch ramp at the end of the approach, then leave a clear ${s.gap} cm gap — that is where the car lands.`;
+      else if(s.t==="cross") d = `Seat the criss-cross piece flat where the two lanes meet. Both lanes join it level at ${Math.round(n.zOut)} cm.`;
       else if(s.t==="split") d = `Fit the splitter to the end of the feed ramp. Both branches hang off this one piece.`;
-      steps.push({kind:"seg", reveal:n.gi, lane:li,
-        t:`${geo.lanes.length>1?lane.name+" · ":""}${s.label}`, d, use, tip});
+      steps.push({kind:"seg", reveal:n.gi, lane:li, phase:lane.name, node:n,
+        t:s.label, d, parts, use:useStr(parts), tip});
     });
   });
   const last = geo.lanes.reduce((a,l)=> l.nodes.length? Math.max(a, l.nodes[l.nodes.length-1].gi) : a, -1);
+  // race-ready checklist, generated from what this layout actually contains
+  const ck = [];
+  ck.push("Run a fingernail across every joint — a 1 mm lip costs more speed than any curve.");
+  if(req.clamp) ck.push(`Clamps tight and the start measured at ${Math.round(an.startH)} cm.`);
+  if(req.support) ck.push(`All ${req.support} supports plumb, heights matching the plan (${[...new Set(geo.supports.map(q=>q.z))].sort((a,b)=>b-a).join(", ")} cm).`);
+  an.lanes.forEach(l=> l.events.forEach(e=>{
+    if(e.type==="loop") ck.push(`${l.name}: loop square to the run-in and brace locked — arrives at ${e.vHave.toFixed(1)} m/s, needs ${e.vNeed.toFixed(1)}.`);
+    if(e.type==="jump") ck.push(`${l.name}: landing ramp taped down ${Math.round(e.range)} cm from the lip.`);
+  }));
+  if(L.interlock) ck.push("Crossing piece flat, both lanes meeting it level.");
+  if(req.booster) ck.push("Fresh batteries in every booster; booster feet taped to the floor.");
+  if(req.launcher) ck.push("Both launchers pulled to the same notch — mark it with tape.");
+  if(an.finishers.length>=2){
+    const ds = an.finishers.map(l=>l.dist), dd = Math.round(Math.max(...ds)-Math.min(...ds));
+    ck.push(dd<6 ? "One release for both cars — a ruler across the start, or a gate." : `Stagger the longer lane ${dd} cm forward, then one release for both cars.`);
+  }
+  ck.push("30 cm of clear run-off past the finish.");
+  ck.push(`Hand-roll a car through slowly once, then a full run — expect about ${an.runTime.toFixed(1)} s.`);
   steps.push({
-    kind:"test", reveal:last,
-    t:"Test, then tune",
-    d:`Roll one car through slowly by hand first, watching for lips at every joint — a 1 mm step is worth more lost speed than any curve on this layout. Then run it for real.`,
-    use:"", tip:`Predicted run: ${an.runTime.toFixed(2)} s at up to ${an.vmax.toFixed(2)} m/s — that is ${Math.round(scaleMph(an.vmax))} mph at 1:64 scale. If you are more than 20% slower, look for a joint step or a sagging support before you blame the car.`
+    kind:"test", reveal:last, lane:-1, phase:"Race ready",
+    t:"Race-ready check", parts:[], use:"", checklist:ck,
+    d:`Tick every line before the first race. Most "slow cars" are a joint step or a sagging prop, and this list finds them in two minutes.`,
+    tip:`Predicted run: ${an.runTime.toFixed(2)} s at up to ${an.vmax.toFixed(2)} m/s — ${Math.round(scaleMph(an.vmax))} mph at 1:64 scale. More than 20% slower than that, look at the track before the car.`
   });
   return steps;
 }
+
 </script>
 
 <script>
@@ -1292,7 +1597,8 @@ function compute(L){
       }
     }));
     if(moved){ geo = walkLayout(L); indexNodes(geo); an = analyse(L, geo); }
-    CACHE[L.id] = {geo, an, req:requirements(L)};
+    geo.supports = supportsFor(geo);
+    CACHE[L.id] = {geo, an, req:requirements(L, geo)};
   }
   return CACHE[L.id];
 }
@@ -1512,35 +1818,74 @@ function renderPlanDetail(){
    STAGE 4 — BUILD GUIDE
    ============================================================ */
 let STEPS = [];
+function partChips(parts){
+  return parts.map(x=>`<span class="partchip">${glyph(x.k)}<span>${x.n} × ${esc(PIECES[x.k].nm)}${x.note?` <small>${esc(x.note)}</small>`:""}</span></span>`).join("");
+}
 function renderBuild(){
   const L = S.planId && layoutById(S.planId);
   if(!L) return;
   const c = compute(L), m = matchPlan(L);
   STEPS = stepsFor(L, c.geo, c.an, c.req);
   S.step = Math.min(S.step, STEPS.length-1);
+  const st = STEPS[S.step], total = STEPS.length;
   $("#build-title").textContent = L.nm;
-  $("#build-chip").textContent = `${L.cls==="dual"?"2-lane race":"single line"} · ${L.skill} · ${STEPS.length} steps`;
+  $("#build-chip").textContent = `${L.cls==="dual"?"2-lane race":"single line"} · ${L.skill} · ${total} steps`;
   $("#build-sub").textContent = L.blurb;
 
-  $("#steplist").innerHTML = STEPS.map((s,i)=>`
-    <button class="stepitem${i<S.step?" done":""}" aria-current="${i===S.step}" data-step="${i}">
-      <span class="no">${i===STEPS.length-1?"✓":i+1}</span>
-      <span><span class="t">${esc(s.t)}</span><span class="d">${esc(s.d)}</span>
-      ${s.use?`<span class="use">${esc(s.use)}</span>`:""}
-      ${(i===S.step && s.tip)?`<span class="tip">${esc(s.tip)}</span>`:""}</span>
-    </button>`).join("");
+  /* the list, grouped into phases */
+  let html = "", lastPhase = null;
+  STEPS.forEach((x,i)=>{
+    if(x.phase !== lastPhase){
+      html += `<div class="phase"><i class="l${x.lane}"${x.lane<0?' style="background:var(--ink-3)"':""}></i>${esc(x.phase)}</div>`;
+      lastPhase = x.phase;
+    }
+    html += `<button class="stepitem${i<S.step?" done":""}" aria-current="${i===S.step}" data-step="${i}">
+      <span class="no">${i===total-1?"✓":i+1}</span>
+      <span><span class="t">${esc(x.t)}</span>${x.use?`<span class="use">${esc(x.use)}</span>`:""}</span>
+    </button>`;
+  });
+  $("#steplist").innerHTML = html;
 
-  const st = STEPS[S.step];
+  /* the sheet */
   $("#build-plate").innerHTML = drawSheet(L, c.geo, {
     reveal: st.reveal, current: st.kind==="seg" ? st.reveal : null,
-    titleCells:[{k:"LAYOUT",v:L.nm.toUpperCase()},{k:"STEP",v:`${S.step+1} OF ${STEPS.length}`},{k:"STAGE",v:st.t.toUpperCase().slice(0,22)},{k:"PIECES",v:String(m.tot)},{k:"SCALE",v:"1:64 · CM"}],
-    alt:`${L.nm}, step ${S.step+1} of ${STEPS.length}: ${st.t}`
-  }) + drawProfile(c.geo, c.an);
+    titleCells:[{k:"LAYOUT",v:L.nm.toUpperCase()},{k:"STEP",v:`${S.step+1} OF ${total}`},{k:"STAGE",v:st.t.toUpperCase().slice(0,22)},{k:"PIECES",v:String(m.tot)},{k:"SCALE",v:"1:64 · CM"}],
+    alt:`${L.nm}, step ${S.step+1} of ${total}: ${st.t}`
+  });
   $("#build-readout").innerHTML = readoutHTML(c, m);
-  $("#progbar").style.width = ((S.step)/(STEPS.length-1)*100)+"%";
-  $("#stepcount").textContent = `${S.step+1} / ${STEPS.length}`;
-  $("#prev").disabled = S.step===0;
-  $("#next").disabled = S.step===STEPS.length-1;
+
+  /* the current step card */
+  const laneName = st.lane>=0 ? c.geo.lanes[st.lane].name : st.phase;
+  const noCls = st.kind==="test" ? " done" : (st.lane>0 ? " l1" : "");
+  $("#stepcard").innerHTML = `
+    <div class="sc-body">
+      <div class="sc-head">
+        <span class="sc-no${noCls}">${st.kind==="test"?"✓":S.step+1}</span>
+        <div><span class="eyebrow">${esc(laneName)} · step ${S.step+1} of ${total}</span><h3>${esc(st.t)}</h3></div>
+      </div>
+      <p class="sc-d">${esc(st.d)}</p>
+      ${st.parts && st.parts.length ? `<div class="sc-parts">${partChips(st.parts)}</div>` : ""}
+      ${st.checklist ? `<div class="checks-list">${st.checklist.map((t,i)=>`<label class="ck"><input type="checkbox" data-ck="${i}"><span>${esc(t)}</span></label>`).join("")}</div>` : ""}
+      ${st.tip ? `<div class="sc-tip">${esc(st.tip)}</div>` : ""}
+    </div>
+    <div class="sc-nav">
+      <button class="btn" data-nav="prev" ${S.step===0?"disabled":""}>Back</button>
+      <div class="prog"><div class="bar"><i style="width:${(S.step/(total-1)*100)}%"></i></div></div>
+      <span class="cnt">${S.step+1} / ${total}</span>
+      <button class="btn primary" data-nav="next" ${S.step===total-1?"disabled":""}>${S.step===total-2?"Finish":"Next"}</button>
+    </div>`;
+
+  /* the detail inset */
+  let insetHead, insetSvg;
+  if(st.kind==="seg"){
+    insetHead = `<h3>Detail</h3><span>${esc(st.node.seg.label||"")}</span>`;
+    insetSvg = drawDetail(L, c.geo, st.node);
+  } else {
+    insetHead = `<h3>${st.kind==="prep"?"Site plan":"Finished layout"}</h3><span>${Math.round(c.geo.w)}×${Math.round(c.geo.h)} cm</span>`;
+    insetSvg = drawSheet(L, c.geo, {reveal: st.kind==="prep" ? -1 : null, titleCells:[], supportLabels:true, alt:"Whole layout"});
+  }
+  $("#inset").innerHTML = `<header>${insetHead}</header>${insetSvg}`;
+
   const list = $("#steplist"), cur = $(`.stepitem[data-step="${S.step}"]`);
   if(list && cur && list.scrollHeight > list.clientHeight){
     list.scrollTo({top: cur.offsetTop - list.clientHeight/2 + cur.offsetHeight/2, behavior:"smooth"});
@@ -1606,10 +1951,16 @@ document.addEventListener("click", e=>{
   }
   const si = t.closest("[data-step]");
   if(si){ goStep(+si.dataset.step); return; }
+  const nv = t.closest("[data-nav]");
+  if(nv){ goStep(S.step + (nv.dataset.nav==="next"?1:-1)); return; }
   if(t.closest("#drop")) $("#file").click();
   if(t.closest("#btn-clear")) setPhoto(null);
 });
 
+document.addEventListener("change", e=>{
+  const ck = e.target.closest("[data-ck]");
+  if(ck) ck.closest(".ck").classList.toggle("on", ck.checked);
+});
 document.addEventListener("input", e=>{
   const n = e.target.closest("[data-num]");
   if(n){ S.bin[n.dataset.num] = Math.max(0, Math.min(999, parseInt(n.value,10)||0)); save();
@@ -1635,8 +1986,6 @@ $("#skip-sets").onclick = ()=> go(1);
 $("#clear-sets").onclick = ()=>{ S.sets.clear(); setsToBin(); renderSets(); renderBin(); };
 $("#zero-bin").onclick = ()=>{ S.bin = {}; renderBin(); };
 $("#only-buildable").onchange = e=>{ S.onlyBuildable = e.target.checked; renderPlans(); };
-$("#prev").onclick = ()=> goStep(S.step-1);
-$("#next").onclick = ()=> goStep(S.step+1);
 $("#restart").onclick = ()=> goStep(0);
 
 document.addEventListener("dragover", e=>{ if(e.dataTransfer){ e.preventDefault(); const d=$("#drop"); if(d) d.classList.add("over"); } });
