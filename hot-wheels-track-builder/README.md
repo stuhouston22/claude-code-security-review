@@ -10,8 +10,10 @@ Open `index.html` in a browser. No build step, no dependencies.
 1. **Your sets** — tick the official sets you own; each seeds the parts bin.
 2. **Your pieces** — photograph the pile and let the scan tally it, then correct
    anything it got wrong. Counts are always editable.
-3. **Layouts** — nine layouts, filtered to what your bin can actually build, each
-   drawn to scale as a drafting plan and run through an energy check.
+3. **Layouts** — thirteen layouts in a thumbnail gallery, filtered to what your bin
+   can build. Each opens as a 3D render or a measured plan, can be re-proportioned
+   to your own table height, and can be run as a slow-motion race before you
+   build it.
 4. **Build guide** — one step per piece. A step card states the job and the exact
    parts (with support heights), a zoomed detail inset shows the piece being placed
    with elevation callouts at both ends, and the full plan beneath shows placed
@@ -34,6 +36,24 @@ Segment types: `str` (straight, with drop), `arc` (radius + signed sweep), `loop
 `cork`, `jump`, `cross`, `split`. Lanes can be `pinTo` another lane (branches hanging
 off a splitter) and `interlock` layouts slide one lane until its crossing piece meets
 the other's, so a shared criss-cross really is shared.
+
+## 3D view, simulation and height tuning
+
+`drawIso` projects the same segment data into an isometric scene: the table the
+track is clamped to, support columns with their heights, standing loops, corkscrews,
+jump arcs, floor shadows and finish gates. `path3` gives every piece a 3D
+centreline, used both to draw it and to drive the cars.
+
+The simulation is not an animation of a guess. `runLane` records a timed trace of
+every piece (entry speed, exit speed, duration); the cars follow that trace at
+0.35x speed. A car that arrives at a loop below the frictionless minimum falls out
+of it on screen, and the result line calls the race from the same numbers as the
+engineering check.
+
+The start-height slider builds a variant of the layout with every drop rescaled
+(`variantOf`), re-runs the physics and redraws everything, so you can see whether
+the layout still works off a 70 cm desk instead of the 95 cm it was designed for.
+The range stops where a ramp would pass 58 degrees.
 
 ## Making it solid
 

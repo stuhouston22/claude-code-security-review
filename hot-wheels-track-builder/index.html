@@ -9,6 +9,7 @@
   --line:#D3D8DF; --line-2:#BFC7D1;
   --track:#FF6A00; --ember:#C24A00; --track-soft:#FFE7D6;
   --track2:#2E7CF6; --ember2:#1B52B8;
+  --under:#8A3500; --under2:#123A80; --floor:#EEF0F4; --floor-line:#DADFE7; --car1:#FFFFFF; --car2:#FFD23F;
   --draft:#6E8CB5;
   --go:#0F8F63; --warn:#A96C00; --fault:#CE2438;
   --go-soft:#DCF3E9; --warn-soft:#FBEDD3; --fault-soft:#FBE0E3;
@@ -25,6 +26,7 @@
     --line:#2A303A; --line-2:#3A414D;
     --track:#FF7C22; --ember:#FFA265; --track-soft:#3B2415;
     --track2:#4F93FF; --ember2:#9FC2FF;
+    --under:#7A3208; --under2:#1C4A99; --floor:#181C24; --floor-line:#262D3A; --car1:#FFFFFF; --car2:#FFD23F;
     --draft:#84A6D2;
     --go:#3DDC97; --warn:#FFC145; --fault:#FF6373;
     --go-soft:#12312A; --warn-soft:#33280F; --fault-soft:#36191F;
@@ -38,6 +40,7 @@
   --line:#2A303A; --line-2:#3A414D;
   --track:#FF7C22; --ember:#FFA265; --track-soft:#3B2415;
   --track2:#4F93FF; --ember2:#9FC2FF;
+  --under:#7A3208; --under2:#1C4A99; --floor:#181C24; --floor-line:#262D3A; --car1:#FFFFFF; --car2:#FFD23F;
   --draft:#84A6D2;
   --go:#3DDC97; --warn:#FFC145; --fault:#FF6373;
   --go-soft:#12312A; --warn-soft:#33280F; --fault-soft:#36191F;
@@ -86,7 +89,9 @@ input[type="checkbox"]{accent-color:var(--track); width:14px; height:14px}
 }
 .brand small{display:block; font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; color:var(--ink-3); text-transform:uppercase; margin-top:-2px}
 
-.stepper{display:flex; align-items:stretch; gap:2px; margin-left:auto; flex-wrap:wrap}
+.railbin{margin-left:auto}
+.stepper{display:flex; align-items:stretch; gap:2px; flex-wrap:wrap}
+.railbin[hidden] + .stepper{margin-left:auto}
 .stepper button{
   background:none; border:0; cursor:pointer;
   display:flex; align-items:center; gap:8px;
@@ -118,6 +123,7 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 .stage-head p{color:var(--ink-2); font-size:14.5px}
 
 .split{display:grid; grid-template-columns:minmax(320px,392px) 1fr; gap:20px; align-items:start}
+.split > *{min-width:0}
 @media (max-width:1080px){ .split{grid-template-columns:1fr} .split.plan-first > .col-b{order:-1} }
 
 .card{background:var(--panel); border:1px solid var(--line); border-radius:5px; box-shadow:var(--shadow)}
@@ -139,6 +145,7 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 .btn:hover:not(:disabled){background:var(--panel-3)}
 .btn:active:not(:disabled){transform:translateY(1px)}
 .btn:disabled{opacity:.45; cursor:not-allowed}
+.btn[hidden]{display:none}
 .btn.primary{background:var(--track); border-color:var(--track); color:#fff; box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
 .btn.primary:hover:not(:disabled){background:var(--ember); border-color:var(--ember)}
 .btn.ghost{background:transparent}
@@ -168,7 +175,9 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 .setcard[aria-pressed="true"] .tick{background:var(--track); border-color:var(--track); color:#fff}
 .setcard h4{font-size:14.5px; font-weight:700; padding-right:26px; font-variation-settings:"wdth" 108}
 .setcard .kind{font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--track)}
-.setcard .contents{font-size:12px; color:var(--ink-3); font-family:var(--mono); line-height:1.7}
+.setcard .contents{display:flex; flex-wrap:wrap; gap:4px 10px; margin-top:2px}
+.setcard .pc{display:inline-flex; align-items:center; gap:4px; font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--ink-2)}
+.setcard .pc .glyph{width:22px; height:15px; opacity:.85}
 
 /* ---------- parts bin ---------- */
 .bin{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:10px}
@@ -216,7 +225,18 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 @keyframes pulse{0%,100%{opacity:.25; transform:scale(.7)} 50%{opacity:1; transform:scale(1)}}
 
 /* ---------- plan cards ---------- */
-.planlist{display:flex; flex-direction:column; gap:9px; max-height:none}
+.planlist{position:relative; display:flex; flex-direction:column; gap:9px}
+@media (min-width:1081px){
+  .cands{position:sticky; top:calc(var(--rail,56px) + 16px)}
+  .cands .planlist{max-height:calc(100vh - var(--rail,56px) - 150px); overflow-y:auto}
+}
+@media (max-width:1080px){
+  .planlist{flex-direction:row; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:12px !important}
+  .planlist .plancard{flex:0 0 232px; scroll-snap-align:start}
+  .planlist .empty{flex:1}
+}
+.plancard .thumb{display:block; border:1px solid var(--line); border-radius:3px; overflow:hidden; background:var(--sheet)}
+.plancard .thumb svg{display:block; width:100%; height:118px}
 .plancard{
   text-align:left; cursor:pointer; width:100%;
   background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:12px 14px;
@@ -225,7 +245,7 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 .plancard:hover{border-color:var(--line-2)}
 .plancard[aria-pressed="true"]{border-color:var(--track); box-shadow:inset 0 0 0 1px var(--track)}
 .plancard .r1{display:flex; align-items:baseline; gap:9px}
-.plancard h4{font-size:14.5px; font-weight:700; font-variation-settings:"wdth" 108}
+.plancard h4{font-size:14.5px; font-weight:700; font-variation-settings:"wdth" 108; text-align:left}
 .plancard .tag{
   margin-left:auto; font-family:var(--mono); font-size:9.5px; letter-spacing:.1em;
   text-transform:uppercase; padding:2px 6px; border-radius:2px; white-space:nowrap;
@@ -262,6 +282,34 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 .l1.seg-base,.l2.seg-base{stroke:var(--ember2)}
 .l1.seg-face,.l2.seg-face{stroke:var(--track2)}
 .l1.seg-halo,.l2.seg-halo{stroke:var(--track2)}
+/* 3D scene */
+.iso-floor{fill:var(--floor); stroke:var(--line-2); stroke-width:.5; stroke-linejoin:round}
+.iso-grid{fill:none; stroke:var(--floor-line); stroke-width:.45}
+.iso-shadow{fill:none; stroke:#000; opacity:.14; stroke-width:4.8; stroke-linecap:round; stroke-linejoin:round}
+.iso-shadow.air{stroke-width:1.4; stroke-dasharray:3 4; opacity:.22}
+.iso-ghost{fill:none; stroke:var(--ink-3); opacity:.3; stroke-width:1.5; stroke-dasharray:3 4; stroke-linecap:round}
+.iso-under,.iso-base,.iso-face,.iso-halo{fill:none; stroke-linecap:round; stroke-linejoin:round}
+.iso-under{stroke:var(--under); stroke-width:5}
+.iso-base{stroke:var(--ember); stroke-width:5}
+.iso-face{stroke:var(--track); stroke-width:3.1}
+.iso-halo{stroke:var(--track); stroke-width:13; opacity:.24}
+.l1.iso-under{stroke:var(--under2)} .l1.iso-base{stroke:var(--ember2)} .l1.iso-face{stroke:var(--track2)} .l1.iso-halo{stroke:var(--track2)}
+.iso-air{fill:none; stroke:var(--draft); stroke-width:1.3; stroke-dasharray:3 3; stroke-linecap:round}
+.iso-sup line{stroke:var(--ink-2); stroke-width:1.3; stroke-linecap:round}
+.iso-sup ellipse{fill:var(--ink-2)}
+.iso-sup.ghost{opacity:.22}
+.iso-table{fill:var(--panel-3); stroke:var(--line-2); stroke-width:.6; stroke-linejoin:round}
+.iso-table-side{fill:var(--line-2); stroke:var(--line-2); stroke-width:.6; stroke-linejoin:round}
+.iso-leg{stroke:var(--line-2); stroke-width:2.2; stroke-linecap:round}
+.iso-box{fill:var(--ink-3); stroke:var(--ink-3); stroke-width:.5; stroke-linejoin:round}
+.iso-box-top{fill:var(--ink); stroke:var(--sheet); stroke-width:.4; stroke-linejoin:round}
+.iso-gate{fill:none; stroke:var(--ink); stroke-width:1.5; stroke-linejoin:round; stroke-linecap:round}
+.iso-xing{fill:var(--sheet); stroke:var(--draft); stroke-width:.9; stroke-linejoin:round}
+.iso-lbl{fill:var(--ink-2); font-family:var(--display); font-weight:800; letter-spacing:.06em; paint-order:stroke; stroke:var(--sheet); stroke-width:1.4; stroke-linejoin:round}
+.iso-note{fill:var(--ink-3); font-family:var(--mono); letter-spacing:.08em; paint-order:stroke; stroke:var(--sheet); stroke-width:1.2; stroke-linejoin:round}
+.car rect.body{stroke:var(--ink); stroke-width:.7}
+.car.c0 rect.body{fill:var(--car1)} .car.c1 rect.body{fill:var(--car2)}
+.car rect.glass{fill:var(--ink)}
 .joint{fill:var(--sheet); stroke:var(--ember); opacity:.95}
 .l1.joint,.l2.joint{stroke:var(--ember2)}
 .chev{fill:none; stroke:var(--sheet); stroke-linecap:round; stroke-linejoin:round; opacity:.85}
@@ -285,6 +333,43 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
 .readout .k{font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
 .readout .v{font-family:var(--mono); font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.3}
 .readout .v small{font-size:11px; font-weight:500; color:var(--ink-3); margin-left:2px}
+
+/* ---------- sheet tools, simulation bar, height tuning ---------- */
+.platewrap{position:relative}
+.sheet-tools{position:absolute; top:10px; right:10px; z-index:3; display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+.segc{display:inline-flex; border:1px solid var(--line-2); border-radius:3px; overflow:hidden; background:var(--panel)}
+.segc button{border:0; background:transparent; padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer; color:var(--ink-3)}
+.segc button + button{border-left:1px solid var(--line-2)}
+.segc button[aria-pressed="true"]{background:var(--ink); color:var(--panel)}
+.btn.sm{padding:6px 12px; font-size:12px}
+.btn.run{background:var(--panel); border-color:var(--line-2)}
+.btn.run::before{content:""; width:0; height:0; border-left:8px solid var(--track); border-top:5px solid transparent; border-bottom:5px solid transparent}
+.btn.run[hidden]{display:none}
+.simbar{
+  position:absolute; top:10px; left:10px; z-index:3; display:none; align-items:baseline; gap:10px;
+  background:var(--panel); border:1px solid var(--line-2); border-radius:3px; padding:6px 11px; max-width:calc(100% - 20px);
+}
+.simbar.on{display:flex}
+.simbar .clock{font-family:var(--mono); font-weight:700; font-size:14px; font-variant-numeric:tabular-nums; min-width:5.2ch}
+.simbar .res{font-size:12.5px; color:var(--ink-2)}
+@media (max-width:760px){ .sheet-tools{position:static; padding:10px 10px 0; justify-content:space-between} .simbar{position:static; margin:8px 10px 0} }
+@media (max-width:760px){ #s3 .sheet-tools{position:absolute; top:6px; right:6px; padding:0} #s3 .segc button{padding:4px 9px; font-size:11px} }
+.tune{display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:11px 14px; border-top:1px solid var(--line)}
+.tune[hidden]{display:none}
+.tune label{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+.tune input[type="range"]{flex:1; min-width:140px; accent-color:var(--track)}
+.tune output{font-family:var(--mono); font-weight:700; font-size:15px; font-variant-numeric:tabular-nums; min-width:6.5ch; text-align:right}
+.tune .was{font-size:12px; color:var(--ink-3)}
+.plan-cap{display:flex; flex-direction:column; gap:4px; max-width:70ch}
+.plan-cap h3{font-size:20px; font-weight:800}
+.plan-cap p{font-size:14px; color:var(--ink-2)}
+.filters{display:flex; gap:6px; flex-wrap:wrap; padding:10px 12px 0}
+.filters button{border:1px solid var(--line-2); background:transparent; border-radius:3px; padding:4px 10px; font-size:12px; font-weight:600; color:var(--ink-3); cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--panel)}
+.railbin{font-family:var(--mono); font-size:11px; color:var(--ink-3); letter-spacing:.04em; white-space:nowrap}
+.railbin b{color:var(--ink); font-weight:700}
+.railbin[hidden]{display:none}
+@media (max-width:1180px){ .railbin{display:none} }
 
 /* ---------- checks ---------- */
 .checks{display:flex; flex-direction:column; gap:7px}
@@ -410,6 +495,7 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
     </span>
     <span><b>Orange Track Lab</b><small>Track Builder · Design Office</small></span>
   </div>
+  <span class="railbin" id="railbin" hidden></span>
   <nav class="stepper" aria-label="Build stages">
     <button data-go="0"><span class="idx">1</span><span class="lbl">Your sets</span></button>
     <button data-go="1"><span class="idx">2</span><span class="lbl">Your pieces</span></button>
@@ -484,24 +570,47 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
   <div class="stage-head">
     <span class="eyebrow">Stage 3 of 4</span>
     <h2 id="s2h">Layouts your bin can actually build</h2>
-    <p>Every plan below is drawn to scale from your piece counts, then run through an energy check — so a loop that your drop height can't clear gets flagged before you spend an afternoon on it.</p>
+    <p>Each one is rendered from your piece counts and run through an energy check. Flip between the 3D view and the measured plan, set the start to your own table height, then run it before you build it.</p>
   </div>
   <div class="split">
-    <div class="col-a" style="display:flex; flex-direction:column; gap:16px">
+    <div class="col-a cands">
       <div class="card">
         <header>
-          <h3>Candidates</h3>
+          <h3>Layouts</h3>
           <span class="hint"><label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="only-buildable" checked> buildable only</label></span>
         </header>
+        <div class="filters" role="group" aria-label="Layout type">
+          <button data-filter="all" aria-pressed="true">All</button>
+          <button data-filter="dual" aria-pressed="false">2-lane races</button>
+          <button data-filter="single" aria-pressed="false">Single line</button>
+        </div>
         <div class="planlist" id="planlist" style="padding:12px"></div>
       </div>
     </div>
     <div class="col-b" style="display:flex; flex-direction:column; gap:16px">
+      <div class="plan-cap" id="plan-cap"></div>
       <div class="sheet">
-        <div class="plate" id="plan-plate"></div>
+        <div class="platewrap">
+          <div class="sheet-tools">
+            <div class="segc" role="group" aria-label="View">
+              <button data-view="iso" aria-pressed="true">3D</button>
+              <button data-view="plan" aria-pressed="false">Plan</button>
+            </div>
+            <button class="btn sm run" data-run>Run it</button>
+          </div>
+          <div class="simbar" role="status"><span class="clock">0.00 s</span><span class="res"></span></div>
+          <div class="plate" id="plan-plate"></div>
+        </div>
+        <div class="tune" id="tune" hidden>
+          <label for="hslider">Start height</label>
+          <input type="range" id="hslider" step="1">
+          <output id="hval" for="hslider"></output>
+          <span class="was" id="hwas"></span>
+          <button class="btn sm ghost" id="hreset">Reset</button>
+        </div>
         <div class="readout" id="plan-readout"></div>
       </div>
-      <div class="split" style="grid-template-columns:1fr 1fr; align-items:start">
+      <div class="split" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); align-items:start">
         <div class="card">
           <header><h3>Engineering check</h3></header>
           <div class="body"><div class="checks" id="plan-checks"></div></div>
@@ -528,7 +637,17 @@ main{flex:1; padding:22px; width:100%; max-width:1560px; margin:0 auto}
   <div class="buildgrid">
     <div class="bg-sheet">
       <div class="sheet">
-        <div class="plate" id="build-plate"></div>
+        <div class="platewrap">
+          <div class="sheet-tools">
+            <div class="segc" role="group" aria-label="View">
+              <button data-view="iso" aria-pressed="true">3D</button>
+              <button data-view="plan" aria-pressed="false">Plan</button>
+            </div>
+            <button class="btn sm run" data-run>Run it</button>
+          </div>
+          <div class="simbar" role="status"><span class="clock">0.00 s</span><span class="res"></span></div>
+          <div class="plate" id="build-plate"></div>
+        </div>
         <div class="readout" id="build-readout"></div>
       </div>
     </div>
@@ -865,7 +984,7 @@ function walkLane(lane, pose, li){
   let p = {x:pose.x, y:pose.y}, hdg = pose.hdg, z = pose.z;
   const nodes = [];
   for(const s of lane.segs){
-    const n = {seg:s, from:{...p}, hdgIn:hdg, zIn:z, poly:[{...p}], glyphs:[]};
+    const n = {seg:s, from:{...p}, hdgIn:hdg, zIn:z, poly:[{...p}], glyphs:[], side:side>0?1:-1};
     if(s.t==="str"){
       const end = fwd(p,hdg,s.len);
       n.d = `M ${f1(p.x)} ${f1(p.y)} L ${f1(end.x)} ${f1(end.y)}`;
@@ -916,6 +1035,45 @@ function walkLane(lane, pose, li){
     nodes.push(n);
   }
   return {nodes, end:{x:p.x, y:p.y, hdg, z}};
+}
+
+/* The piece's centreline in 3D (cm). One definition feeds both the
+   isometric drawing and the car's path in the race simulation. */
+function path3(n){
+  const s = n.seg, P = (q,z)=>({x:q.x, y:q.y, z});
+  if(n.zero) return [];
+  if(s.t==="str") return [P(n.from,n.zIn), P(n.to,n.zOut)];
+  if(s.t==="arc"){ const N = n.poly.length-1; return n.poly.map((q,i)=>P(q, n.zIn + (n.zOut-n.zIn)*i/N)); }
+  const out = [];
+  if(s.t==="cork"){
+    const N = 40;
+    for(let i=0;i<=N;i++){
+      const f = i/N, a = f*Math.PI*4;
+      const q = fwd(fwd(n.from, n.hdgIn, s.len*f), n.hdgIn-90, 5*Math.sin(a));
+      out.push(P(q, n.zIn + (n.zOut-n.zIn)*f + 5*(1-Math.cos(a))));
+    }
+    return out;
+  }
+  if(s.t==="loop"){
+    const R = s.r, mid = fwd(n.from, n.hdgIn, R), N = 40;
+    out.push(P(n.from, n.zIn));
+    for(let i=0;i<=N;i++){
+      const a = i/N*Math.PI*2;
+      const q = fwd(fwd(mid, n.hdgIn, R*Math.sin(a)), n.hdgIn + 90*n.side, 3.6*i/N);
+      out.push(P(q, n.zIn + R*(1-Math.cos(a))));
+    }
+    out.push(P(n.to, n.zOut));
+    return out;
+  }
+  if(s.t==="jump"){
+    const rise = s.rise||0, H = s.gap*0.11, N = 16;
+    for(let i=0;i<=N;i++){
+      const f = i/N;
+      out.push({x:n.from.x+(n.to.x-n.from.x)*f, y:n.from.y+(n.to.y-n.from.y)*f, z:n.zIn + rise*(1-f) + 4*H*f*(1-f)});
+    }
+    return out;
+  }
+  return out;
 }
 
 /* Walk a whole layout, pinning branch lanes and shared crossings. */
@@ -1035,7 +1193,7 @@ const V_LAUNCHER = 4.2, V_BOOSTER = 5.0;
 
 function runLane(nodes, v2in){
   let v2 = Math.max(0, v2in), t = 0, dist = 0, vmax = 0;
-  const events = [], profile = [];
+  const events = [], profile = [], trace = [];
   let sCum = 0, z = nodes.length ? nodes[0].zIn : 0;
   profile.push({s:0, z});
   for(const n of nodes){
@@ -1052,6 +1210,7 @@ function runLane(nodes, v2in){
       if(v2b <= 0.02){ events.push({type:"stall", at:s.label}); v2b = 0; }
       const v2f = Math.sqrt(Math.max(0,v2b));
       const vavg = Math.max(0.15,(v1+v2f)/2);
+      trace.push({n, t0:t, T:L/vavg, v1, v2:v2f, stall:v2b===0});
       t += L/vavg; dist += n.run; v2 = v2b; z -= (s.drop||0); push();
     }
     else if(s.t==="loop"){
@@ -1064,7 +1223,9 @@ function runLane(nodes, v2in){
       v2 = v2 - 4*G*r - MU*G*(2*Math.PI*r)*0.5;
       if(v2 < 0) v2 = 0;
       const after = Math.sqrt(v2);
-      t += (2*Math.PI*r)/Math.max(0.2,(before+after)/2);
+      const Tl = (2*Math.PI*r)/Math.max(0.2,(before+after)/2);
+      trace.push({n, t0:t, T:Tl, v1:before, v2:after, fall: before*before < need2/LOOP_MARGIN});
+      t += Tl;
       dist += n.run;
     }
     else if(s.t==="jump"){
@@ -1075,11 +1236,13 @@ function runLane(nodes, v2in){
       const range = v*Math.cos(a) * (v*Math.sin(a) + Math.sqrt(v*v*Math.sin(a)*Math.sin(a) + 2*G*rise)) / G;
       events.push({type:"jump", seg:s, label:s.label, gap:s.gap, range:range*100, v});
       v2 = v2b*0.88;
-      t += (range||0.1)/Math.max(0.5,v); dist += n.run; push();
+      const Tj = (range||0.1)/Math.max(0.5,v);
+      trace.push({n, t0:t, T:Tj, v1:v, v2:v});
+      t += Tj; dist += n.run; push();
     }
     if(!n.zero){ sCum += n.run; profile.push({s:sCum, z:n.zOut}); }
   }
-  return {v2, vExit:Math.sqrt(Math.max(0,v2)), t, dist, vmax, events, profile};
+  return {v2, vExit:Math.sqrt(Math.max(0,v2)), t, dist, vmax, events, profile, trace};
 }
 
 function analyse(L, geo){
@@ -1098,6 +1261,7 @@ function analyse(L, geo){
     if(def.pinTo!=null){
       const feed = lanes[def.pinTo];
       r.profile = r.profile.map(q=>({s:q.s + feed.dist, z:q.z}));
+      r.trace = feed.trace.concat(r.trace.map(e=>({...e, t0:e.t0 + feed.t})));
       r.dist += feed.dist; r.t += feed.t;
     }
     lanes.push({...r, name:g.name, def, isBranch:def.pinTo!=null});
@@ -1112,7 +1276,11 @@ function analyse(L, geo){
     return zs.length ? Math.max(...zs)-Math.min(...zs) : 0;
   }));
   const startH = Math.max(...geo.lanes.map(g=> g.nodes.length ? g.nodes[0].zIn : 0));
-  return {lanes, finishers, totalDist, vmax, runTime, drop, startH};
+  let steep = 0;
+  geo.lanes.forEach(g=> g.nodes.forEach(n=>{
+    if(n.seg.t==="str" && n.seg.len) steep = Math.max(steep, Math.asin(Math.min(1,(n.seg.drop||0)/n.seg.len))/RAD);
+  }));
+  return {lanes, finishers, totalDist, vmax, runTime, drop, startH, steep};
 }
 </script>
 
@@ -1245,6 +1413,7 @@ function drawSheet(L, geo, opt){
     tb += `<text class="tb k" font-size="${f1(fs*.82)}" x="${f1(cx)}" y="${f1(by + fs*2.1)}">${esc(c.v)}</text>`;
   });
   g += `<g>${tb}</g>`;
+  g += `<g class="cars" data-mode="plan"></g>`;
 
   return `<svg viewBox="0 0 ${f1(W)} ${f1(H)}" role="img" aria-label="${esc(opt.alt||L.nm+" track plan")}">
     <rect width="${f1(W)}" height="${f1(H)}" fill="var(--sheet)"/>
@@ -1360,6 +1529,248 @@ function drawDetail(L, geo, node){
     <rect x="${f1(x0)}" y="${f1(y0)}" width="${f1(W)}" height="${f1(H)}" fill="var(--sheet)"/>${g}</svg>`;
 }
 
+/* ============================================================
+   3D VIEW — an isometric render from the same segment data.
+   The plan tells you where things go; this shows what you are building.
+   ============================================================ */
+const ISO = (()=>{ const yaw=-24*RAD, pitch=31*RAD; return {cy:Math.cos(yaw), sy:Math.sin(yaw), sp:Math.sin(pitch), cp:Math.cos(pitch)}; })();
+function proj(x,y,z){
+  const X = x*ISO.cy + y*ISO.sy, D = -x*ISO.sy + y*ISO.cy;
+  return {x:X, y:D*ISO.sp - (z||0)*ISO.cp, d:D};
+}
+function drawIso(L, geo, opt){
+  opt = opt||{};
+  const reveal = opt.reveal, cur = opt.current, thumb = !!opt.thumb;
+  const placed = n => reveal==null || n.gi <= reveal;
+  let x0=1e9, x1=-1e9, y0=1e9, y1=-1e9;
+  const pt = (x,y,z)=>{ const q=proj(x,y,z); if(q.x<x0)x0=q.x; if(q.x>x1)x1=q.x; if(q.y<y0)y0=q.y; if(q.y>y1)y1=q.y; return q; };
+  const xy = q => `${f1(q.x)} ${f1(q.y)}`;
+  const line3 = pts => "M " + pts.map(q=>xy(pt(q.x,q.y,q.z))).join(" L ");
+  const quad = (c,z) => "M " + c.map(q=>xy(pt(q.x,q.y,z))).join(" L ") + " Z";
+  const all = []; geo.lanes.forEach(l=> l.nodes.forEach(n=> all.push(n)));
+
+  /* floor */
+  const bb = geo.bb, m = thumb ? 10 : 20;
+  const fx0=bb.x0-m, fx1=bb.x1+m, fy0=bb.y0-m, fy1=bb.y1+m;
+  let floor = `<path class="iso-floor" d="${quad([{x:fx0,y:fy0},{x:fx1,y:fy0},{x:fx1,y:fy1},{x:fx0,y:fy1}],0)}"/>`;
+  const step = (thumb ? 2 : 1) * ((bb.x1-bb.x0) > 460 ? 50 : 20);
+  for(let x=Math.ceil(fx0/step)*step; x<fx1; x+=step) floor += `<path class="iso-grid" d="M ${xy(proj(x,fy0,0))} L ${xy(proj(x,fy1,0))}"/>`;
+  for(let y=Math.ceil(fy0/step)*step; y<fy1; y+=step) floor += `<path class="iso-grid" d="M ${xy(proj(fx0,y,0))} L ${xy(proj(fx1,y,0))}"/>`;
+  const fs = (x1-x0)/62;
+
+  const items = [];                       // depth-sorted drawables
+  let ghosts = "", shadows = "", labels = "";
+
+  /* track */
+  for(const n of all){
+    if(n.zero || !n.p3 || !n.p3.length) continue;
+    const lc = n.li>0 ? " l1" : "";
+    if(!placed(n)){ ghosts += `<path class="iso-ghost" d="${line3(n.p3)}"/>`; continue; }
+    shadows += `<path class="iso-shadow${n.air?" air":""}" d="${line3(n.p3.map(q=>({x:q.x,y:q.y,z:0})))}"/>`;
+    const d = n.p3.reduce((a,q)=>a+proj(q.x,q.y,q.z).d,0)/n.p3.length;
+    const path = line3(n.p3);
+    let svg = "";
+    if(n.air){
+      svg = `<path class="iso-air" d="${path}"/>`;
+      // the kick ramp the car leaves from
+      const rise = n.seg.rise||0, back = fwd(n.from, n.hdgIn+180, 11);
+      const ramp = line3([{x:back.x,y:back.y,z:n.zIn},{x:n.from.x,y:n.from.y,z:n.zIn+rise}]);
+      svg += `<path class="iso-under${lc}" d="${ramp}" transform="translate(0,1.3)"/><path class="iso-base${lc}" d="${ramp}"/><path class="iso-face${lc}" d="${ramp}"/>`;
+    } else {
+      if(cur!=null && n.gi===cur) svg += `<path class="iso-halo${lc}" d="${path}"/>`;
+      svg += `<path class="iso-under${lc}" d="${path}" transform="translate(0,1.3)"/><path class="iso-base${lc}" d="${path}"/><path class="iso-face${lc}" d="${path}"/>`;
+    }
+    items.push({d, s:svg});
+  }
+
+  /* support props */
+  (geo.supports||[]).forEach(q=>{
+    const on = reveal==null || q.gi <= reveal;
+    const b = pt(q.x,q.y,0), t = pt(q.x,q.y,q.z-0.8);
+    let svg = `<g class="iso-sup${on?"":" ghost"}"><ellipse cx="${f1(b.x)}" cy="${f1(b.y)}" rx="2.5" ry="1.25"/><line x1="${f1(b.x)}" y1="${f1(b.y)}" x2="${f1(t.x)}" y2="${f1(t.y)}"/></g>`;
+    if(on && !thumb) svg += `<text class="suptxt" font-size="${f1(fs*.62)}" x="${f1(b.x+3.6)}" y="${f1(b.y+fs*.25)}"${cur!=null&&q.gi===cur?' style="fill:var(--track)"':''}>${q.z}</text>`;
+    items.push({d:b.d-0.8, s:svg});
+  });
+
+  /* what each lane starts from, and its finish */
+  geo.lanes.forEach(lane=>{
+    if(!lane.nodes.length) return;
+    const n0 = lane.nodes[0], st = lane.def.start, h = n0.hdgIn;
+    const show0 = placed(n0) || reveal===-1;
+    if(st && lane.def.pinTo==null && show0){
+      if(st.mount==="clamp" && n0.zIn > 0){
+        // lanes that leave the same edge share one table; the first of them draws it
+        const mates = geo.lanes.filter(o=> o.nodes.length && o.def.pinTo==null && o.def.start && o.def.start.mount==="clamp"
+          && Math.abs(o.nodes[0].hdgIn - h) < 1 && Math.abs(o.nodes[0].zIn - n0.zIn) < 1);
+        if(mates[0] === lane){
+          const dir = {x:Math.cos(h*RAD), y:Math.sin(h*RAD)}, per = {x:-dir.y, y:dir.x};
+          let f1x=-1e9, l0=1e9, l1=-1e9;
+          mates.forEach(o=>{ const q=o.nodes[0].from, dx=q.x-n0.from.x, dy=q.y-n0.from.y;
+            const fw=dx*dir.x+dy*dir.y, lt=dx*per.x+dy*per.y; f1x=Math.max(f1x,fw); l0=Math.min(l0,lt); l1=Math.max(l1,lt); });
+          const at = (fw,lt)=>({x:n0.from.x+dir.x*fw+per.x*lt, y:n0.from.y+dir.y*fw+per.y*lt});
+          const z = n0.zIn - 1.5, c = [at(f1x+3,l0-13), at(f1x+3,l1+13), at(f1x-42,l1+13), at(f1x-42,l0-13)];
+          let svg = `<path class="iso-table-side" d="${quad(c,z-3.4)}"/>`;
+          c.forEach(q=>{ const a=pt(q.x,q.y,z-3.4), b=pt(q.x,q.y,0); svg += `<line class="iso-leg" x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}"/>`; });
+          svg += `<path class="iso-table" d="${quad(c,z)}"/>`;
+          const far = at(f1x-42,(l0+l1)/2);
+          items.push({d:proj(far.x,far.y,0).d-8, s:svg});
+        }
+      } else if(st.kind==="launcher" || st.kind==="booster"){
+        const back = fwd(n0.from, h+180, 13), w = st.kind==="booster" ? 6 : 4.6, top = st.kind==="booster" ? 8 : 6;
+        const c = [fwd(n0.from,h-90,w), fwd(n0.from,h+90,w), fwd(back,h+90,w), fwd(back,h-90,w)];
+        items.push({d:proj(back.x,back.y,0).d+0.4, s:`<path class="iso-box" d="${quad(c,0)}"/><path class="iso-box" d="${quad(c,top*.5)}"/><path class="iso-box-top" d="${quad(c,top)}"/>`});
+      }
+      if(!thumb){
+        // lanes that start together are told apart by colour; name the start once
+        const peers = geo.lanes.filter(o=> o.nodes.length && o.def.pinTo==null && o.def.start && o.def.start.mount===st.mount
+          && Math.abs(o.nodes[0].hdgIn - h) < 1 && Math.abs(o.nodes[0].zIn - n0.zIn) < 1);
+        if(peers[0] === lane){
+          const cx = peers.reduce((a,o)=>a+o.nodes[0].from.x,0)/peers.length, cy = peers.reduce((a,o)=>a+o.nodes[0].from.y,0)/peers.length;
+          const a = pt(cx, cy, n0.zIn + 10);
+          const who = peers.length>1 ? "START" : lane.name.toUpperCase();
+          const tag = st.mount==="clamp" && n0.zIn>0 ? `${who} · ${Math.round(n0.zIn)} CM` : `${who} · ${st.kind.toUpperCase()}`;
+          labels += `<text class="iso-lbl" font-size="${f1(fs*.74)}" text-anchor="middle" x="${f1(a.x)}" y="${f1(a.y)}">${esc(tag)}</text>`;
+        }
+      }
+    }
+    const last = lane.nodes[lane.nodes.length-1];
+    const isFeed = geo.lanes.some(o=>o.def.pinTo!=null && geo.lanes[o.def.pinTo]===lane);
+    if(!lane.def.closed && !isFeed && placed(last)){
+      const e = last.to, hh = last.hdgOut, z = last.zOut;
+      const a = fwd(e,hh-90,5.6), b = fwd(e,hh+90,5.6);
+      const g1 = [pt(a.x,a.y,z), pt(a.x,a.y,z+10), pt(b.x,b.y,z+10), pt(b.x,b.y,z)];
+      items.push({d:proj(e.x,e.y,0).d+0.6, s:`<path class="iso-gate" d="M ${g1.map(xy).join(" L ")}"/>`});
+      if(!thumb && !labels.includes(">FINISH<")){
+        const q = pt(e.x,e.y,z+14);
+        labels += `<text class="iso-note" font-size="${f1(fs*.6)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y)}">FINISH</text>`;
+      }
+    }
+  });
+
+  /* crossings and splitters sit flat on the track */
+  for(const n of all){
+    if(!n.zero || !placed(n)) continue;
+    const q0 = n.glyphs[0]; if(!q0) continue;
+    const c = [0,90,180,270].map(a=>fwd(n.from, n.hdgIn+45+a, 6.4));
+    items.push({d:proj(n.from.x,n.from.y,0).d+1.5, s:`<path class="iso-xing" d="${quad(c, n.zIn+0.6)}"/>`});
+    if(!thumb){
+      const q = pt(n.from.x, n.from.y, n.zIn);
+      labels += `<text class="iso-note" font-size="${f1(fs*.6)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y + fs*1.9)}">${q0.kind==="cross"?"CROSSING":"SPLITTER"}</text>`;
+    }
+  }
+
+  /* loop and air notes, and heights at both ends of the piece being placed */
+  if(!thumb){
+    for(const n of all){
+      if(!placed(n) || n.zero) continue;
+      if(n.seg.t==="loop" && !labels.includes(`>LOOP ⌀${n.seg.r*2}<`)){ const q = pt((n.from.x+n.to.x)/2, (n.from.y+n.to.y)/2, n.zIn + n.seg.r*2 + 6);
+        labels += `<text class="iso-note" font-size="${f1(fs*.6)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y)}">LOOP ⌀${n.seg.r*2}</text>`; }
+      if(n.seg.t==="jump"){ const mid = n.p3[Math.floor(n.p3.length/2)], q = pt(mid.x, mid.y, mid.z+7);
+        labels += `<text class="iso-note" font-size="${f1(fs*.6)}" text-anchor="middle" x="${f1(q.x)}" y="${f1(q.y)}">AIR ${n.seg.gap} CM</text>`; }
+    }
+    if(cur!=null){
+      const n = all.find(x=>x.gi===cur);
+      if(n && !n.zero){
+        [[n.from,n.zIn],[n.to,n.zOut]].forEach(([q,z])=>{
+          const a = pt(q.x,q.y,z), b = pt(q.x,q.y,z+8);
+          labels += `<line class="elevline" stroke-width=".6" x1="${f1(a.x)}" y1="${f1(a.y)}" x2="${f1(b.x)}" y2="${f1(b.y)}"/>
+            <text class="elev" font-size="${f1(fs*.72)}" text-anchor="middle" x="${f1(b.x)}" y="${f1(b.y - fs*.3)}">${Math.round(z)} cm</text>`;
+        });
+      }
+    }
+  }
+
+  items.sort((a,b)=>a.d-b.d);
+  const pad = thumb ? 5 : 12 + fs, top = thumb ? pad : pad + fs*2.4;
+  const W = x1-x0+pad*2, H = y1-y0+pad+top;
+  return `<svg viewBox="${f1(x0-pad)} ${f1(y0-top)} ${f1(W)} ${f1(H)}" role="img" aria-label="${esc(opt.alt||L.nm+" in 3D")}">
+    <rect x="${f1(x0-pad)}" y="${f1(y0-top)}" width="${f1(W)}" height="${f1(H)}" fill="var(--sheet)"/>
+    ${floor}<g>${ghosts}</g><g>${shadows}</g><g>${items.map(i=>i.s).join("")}</g><g>${labels}</g>
+    ${thumb?"":'<g class="cars" data-mode="iso"></g>'}</svg>`;
+}
+
+/* ============================================================
+   RACE SIMULATION — cars follow the physics trace, in slow motion
+   ============================================================ */
+let SIM = null;
+const SIM_SLOW = 0.35;
+function stopSim(){
+  if(SIM){ cancelAnimationFrame(SIM.raf); SIM = null; }
+  document.querySelectorAll(".simbar").forEach(e=>e.classList.remove("on"));
+}
+function prepPath(n){
+  if(n.cum || !n.p3 || !n.p3.length) return;
+  const c=[0]; for(let i=1;i<n.p3.length;i++){ const a=n.p3[i-1], b=n.p3[i]; c.push(c[i-1]+Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z)); }
+  n.cum = c;
+}
+function along3(n, f){
+  const c = n.cum, p = n.p3, total = c[c.length-1], t = Math.max(0,Math.min(1,f))*total;
+  let i = 1; while(i < c.length-1 && c[i] < t) i++;
+  const span = c[i]-c[i-1], u = span ? (t-c[i-1])/span : 0, a = p[i-1], b = p[i];
+  return {x:a.x+(b.x-a.x)*u, y:a.y+(b.y-a.y)*u, z:a.z+(b.z-a.z)*u};
+}
+function buildRuns(c){
+  const laps = c.L.closed ? 3 : 1;
+  return c.an.finishers.map(ln=>{
+    let tl = ln.trace.filter(e=>e.n.p3 && e.n.p3.length).map(e=>({...e})), dnf = null;
+    for(let i=0;i<tl.length;i++){
+      if(tl[i].fall){ tl[i].T *= 0.5; tl[i].half = true; tl = tl.slice(0,i+1); dnf = "fell out of the loop"; break; }
+      if(tl[i].stall){ tl = tl.slice(0,i+1); dnf = "ran out of speed"; break; }
+    }
+    if(!dnf && laps>1){ const one = tl, T1 = ln.t; tl = []; for(let k=0;k<laps;k++) one.forEach(e=>tl.push({...e, t0:e.t0+k*T1})); }
+    tl.forEach(e=>prepPath(e.n));
+    const end = tl.length ? tl[tl.length-1].t0 + tl[tl.length-1].T : 0;
+    return {name:ln.name, tl, end, dnf, i:0};
+  });
+}
+function poseAt(r, t){
+  const tl = r.tl; if(!tl.length) return {x:0,y:0,z:0};
+  if(t >= r.end){ const e = tl[tl.length-1]; return along3(e.n, e.half ? .5 : 1); }
+  let i = 0; while(i < tl.length-1 && t >= tl[i].t0 + tl[i].T) i++;
+  const e = tl[i], tau = Math.max(0, t-e.t0);
+  const total = (e.v1+e.v2)/2*e.T;
+  let f = total > 1e-6 ? (e.v1*tau + 0.5*((e.v2-e.v1)/e.T)*tau*tau)/total : tau/e.T;
+  if(e.half) f = (tau/e.T)*0.5;
+  return along3(e.n, f);
+}
+function raceResult(runs, closed){
+  const ok = runs.filter(r=>!r.dnf);
+  if(runs.length===1) return runs[0].dnf ? `Did not finish — the car ${runs[0].dnf}.` : `Finished in ${runs[0].end.toFixed(2)} s.`;
+  if(!ok.length) return `Neither car finished — both ${runs[0].dnf}.`;
+  if(ok.length < runs.length) return `${ok[0].name} wins — the other car ${runs.find(r=>r.dnf).dnf}.`;
+  const srt = [...ok].sort((a,b)=>a.end-b.end), gap = srt[1].end - srt[0].end;
+  return gap < 0.005 ? `Dead heat at ${srt[0].end.toFixed(2)} s. The layout is fair; the cars decide it.`
+                     : `${srt[0].name} wins by ${Math.round(gap*1000)} ms${closed?" over 3 laps":""}.`;
+}
+function startSim(host){
+  stopSim();
+  const L0 = S.planId && layoutById(S.planId); if(!L0 || !host) return;
+  const c = compute(L0), runs = buildRuns(c);
+  const layer = host.querySelector(".plate svg .cars"); if(!layer) return;
+  const iso = layer.dataset.mode === "iso";
+  layer.innerHTML = runs.map((r,k)=>`<g class="car c${k%2}"><rect class="body" x="-4.4" y="-2.3" width="8.8" height="4.6" rx="1.5"/><rect class="glass" x="-.4" y="-1.5" width="2.6" height="3" rx=".6"/></g>`).join("");
+  const els = [...layer.children], angs = runs.map(()=>0);
+  const bar = host.querySelector(".simbar"), clock = bar.querySelector(".clock"), res = bar.querySelector(".res");
+  bar.classList.add("on"); res.textContent = "slow motion";
+  const T = Math.max(...runs.map(r=>r.end));
+  const place = t => runs.forEach((r,k)=>{
+    const a = poseAt(r,t), b = poseAt(r,t+0.012);
+    const pa = iso ? proj(a.x,a.y,a.z+1.4) : a, pb = iso ? proj(b.x,b.y,b.z+1.4) : b;
+    if(Math.hypot(pb.x-pa.x, pb.y-pa.y) > 0.01) angs[k] = Math.atan2(pb.y-pa.y, pb.x-pa.x)/RAD;
+    els[k].setAttribute("transform", `translate(${f1(pa.x)} ${f1(pa.y)}) rotate(${f1(angs[k])})`);
+  });
+  const finish = ()=>{ place(T); clock.textContent = T.toFixed(2)+" s"; res.textContent = raceResult(runs, !!c.L.closed); SIM = null; };
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ finish(); return; }
+  const t0 = performance.now();
+  const tick = now => {
+    const t = (now-t0)/1000*SIM_SLOW;
+    if(t >= T){ finish(); return; }
+    place(t); clock.textContent = t.toFixed(2)+" s";
+    SIM.raf = requestAnimationFrame(tick);
+  };
+  SIM = {raf:requestAnimationFrame(tick)};
+}
+
 /* Elevation profile strip — only worth drawing when the layout descends */
 function drawProfile(geo, an){
   if(an.drop < 12) return "";
@@ -1395,12 +1806,12 @@ function drawProfile(geo, an){
 /* ============================================================
    STATE
    ============================================================ */
-const S = {stage:0, sets:new Set(), bin:{}, photo:null, planId:null, step:0, onlyBuildable:true};
+const S = {stage:0, sets:new Set(), bin:{}, photo:null, planId:null, step:0, onlyBuildable:true, view:"iso", filter:"all", heights:{}};
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 
 function save(){
-  try{ localStorage.setItem("otl", JSON.stringify({sets:[...S.sets], bin:S.bin, planId:S.planId})); }catch(e){}
+  try{ localStorage.setItem("otl", JSON.stringify({sets:[...S.sets], bin:S.bin, planId:S.planId, view:S.view, heights:S.heights})); }catch(e){}
 }
 function load(){
   try{
@@ -1409,6 +1820,8 @@ function load(){
     if(Array.isArray(d.sets)) d.sets.forEach(x=>S.sets.add(x));
     if(d.bin && typeof d.bin==="object") S.bin = d.bin;
     if(d.planId) S.planId = d.planId;
+    if(d.view==="plan" || d.view==="iso") S.view = d.view;
+    if(d.heights && typeof d.heights==="object") S.heights = d.heights;
   }catch(e){}
 }
 
@@ -1443,12 +1856,15 @@ function buildChecks(L, geo, an){
     l.events.forEach(e=>{
       if(e.type==="loop"){
         const m = e.margin;
-        const lvl = m>=0.15 ? "pass" : (m>=0 ? "marginal" : "fail");
+        const falls = m < 1/LOOP_MARGIN - 1;               // below the frictionless minimum: it cannot stay on
+        const lvl = m>=0.15 ? "pass" : (falls ? "fail" : "marginal");
         const pct = Math.round(m*100);
-        add(lvl, lvl==="pass"?"CLEARS":(lvl==="marginal"?"TIGHT":"FAILS"),
+        add(lvl, lvl==="pass"?"CLEARS":(falls?"FALLS":(m>=0?"TIGHT":"RISKY")),
           `<b>${esc(l.name)} · ${esc(e.label)}</b> — arrives at <em>${e.vHave.toFixed(2)} m/s</em>, needs <em>${e.vNeed.toFixed(2)} m/s</em> to hold the roof of a ${e.r*2} cm loop. ` +
           (lvl==="fail"
-            ? `Short by ${Math.abs(pct)}% of the energy budget — raise the start by about <em>${Math.ceil(((e.vNeed*e.vNeed - e.vHave*e.vHave)/(2*G))*100/0.55)} cm</em> or shorten the run-in.`
+            ? `The car leaves the roof and drops out. Raise the start by about <em>${Math.ceil(((e.vNeed*e.vNeed - e.vHave*e.vHave)/(2*G))*100/0.55)} cm</em>.`
+            : m < 0
+              ? `Inside the safety margin by ${Math.abs(pct)}%. A fast car on a clean track gets round; most will not. Raise the start by about <em>${Math.ceil(((e.vNeed*e.vNeed - e.vHave*e.vHave)/(2*G))*100/0.55)} cm</em>.`
             : lvl==="marginal"
               ? `Only ${pct}% in hand. It will work on a clean, dry track and fail on a dusty one — add 10 cm of start height for confidence.`
               : `${pct}% of margin in hand. Comfortable.`));
@@ -1481,6 +1897,8 @@ function buildChecks(L, geo, an){
         : `<b>Race fairness</b> — ${esc(slow.name)} is <em>${Math.round(dDist)} cm</em> longer and finishes about <em>${(dT*1000).toFixed(0)} ms</em> later. Start it <em>${Math.round(dDist)} cm</em> ahead to even the race, or accept it as the outside line.`);
   }
 
+  if(an.steep > 50)
+    add("marginal","STEEP", `<b>Steepest ramp is ${Math.round(an.steep)}°</b> — past about 50° cars tend to bottom out where the ramp meets the next piece. Add a straight to the descent or bring the start down.`);
   if(an.startH > 130)
     add("marginal","HEIGHT", `<b>Start height ${Math.round(an.startH)} cm</b> — higher than most tables. You will need a bookshelf, a stair rail or a door frame to clamp to.`);
   else if(an.startH > 0)
@@ -1583,24 +2001,47 @@ function stepsFor(L, geo, an, req){
    COMPUTE CACHE
    ============================================================ */
 const CACHE = {};
-function compute(L){
-  if(!CACHE[L.id]){
-    let geo = walkLayout(L); indexNodes(geo);
-    let an = analyse(L, geo);
-    // Second pass: a jump's air gap is an OUTPUT of the entry speed, not an input.
-    // Redraw it where the car actually lands so the plan and the advice agree.
-    let moved = false;
-    an.lanes.forEach(l => l.events.forEach(e => {
-      if(e.type==="jump"){
-        const g = Math.max(20, Math.round(e.range/5)*5);
-        if(e.seg.gap !== g){ e.seg.gap = g; moved = true; }
-      }
-    }));
-    if(moved){ geo = walkLayout(L); indexNodes(geo); an = analyse(L, geo); }
-    geo.supports = supportsFor(geo);
-    CACHE[L.id] = {geo, an, req:requirements(L, geo)};
-  }
-  return CACHE[L.id];
+function baseHeight(L0){ return Math.max(...L0.lanes.map(l=> l.origin ? l.origin.z : 0)); }
+/* How far the start can be raised before a ramp passes 58 degrees. */
+function heightRange(L0){
+  const H = baseHeight(L0);
+  if(H <= 0) return null;
+  let fmax = 1.35;
+  L0.lanes.forEach(l=> l.segs.forEach(sg=>{
+    if(sg.t==="str" && sg.drop>0) fmax = Math.min(fmax, 0.848*sg.len/sg.drop);
+  }));
+  return {base:H, min:Math.round(H*0.55), max:Math.max(H, Math.floor(H*fmax))};
+}
+function variantOf(L0, f){
+  const L = JSON.parse(JSON.stringify(L0));
+  if(f === 1) return L;
+  L.lanes.forEach(l=>{
+    let before = 0, after = 0;
+    l.segs.forEach(sg=>{ if(sg.drop){ before += sg.drop; sg.drop = Math.round(sg.drop*f*10)/10; after += sg.drop; } });
+    if(l.origin) l.origin.z = Math.round((after + (l.origin.z - before)*f)*10)/10;
+  });
+  return L;
+}
+function compute(L0){
+  const f = (S.heights && S.heights[L0.id]) || 1;
+  const hit = CACHE[L0.id];
+  if(hit && hit.f === f) return hit;
+  const L = variantOf(L0, f);
+  let geo = walkLayout(L); indexNodes(geo);
+  let an = analyse(L, geo);
+  // Second pass: a jump's air gap is an OUTPUT of the entry speed, not an input.
+  // Redraw it where the car actually lands so the plan and the advice agree.
+  let moved = false;
+  an.lanes.forEach(l => l.events.forEach(e => {
+    if(e.type==="jump"){
+      const g = Math.max(20, Math.round(e.range/5)*5);
+      if(e.seg.gap !== g){ e.seg.gap = g; moved = true; }
+    }
+  }));
+  if(moved){ geo = walkLayout(L); indexNodes(geo); an = analyse(L, geo); }
+  geo.supports = supportsFor(geo);
+  geo.lanes.forEach(l=> l.nodes.forEach(n=>{ n.p3 = path3(n); }));
+  return (CACHE[L0.id] = {f, L, geo, an, req:requirements(L, geo)});
 }
 const layoutById = id => LAYOUTS.find(l=>l.id===id);
 
@@ -1633,12 +2074,12 @@ function readoutHTML(c, m){
 function renderSets(){
   $("#setgrid").innerHTML = SETS.map(s=>{
     const on = S.sets.has(s.id);
-    const contents = Object.keys(s.p).map(k=>`${s.p[k]}× ${PIECES[k].ab}`).join("  ");
+    const contents = Object.keys(s.p).map(k=>`<span class="pc" title="${esc(PIECES[k].nm)}">${glyph(k)}${s.p[k]}</span>`).join("");
     return `<button class="setcard" data-set="${s.id}" aria-pressed="${on}">
       <span class="tick" aria-hidden="true">✓</span>
       <span class="kind">${esc(s.kind)}</span>
       <h4>${esc(s.nm)}</h4>
-      <span class="contents">${esc(contents)}</span>
+      <span class="contents">${contents}</span>
     </button>`;
   }).join("");
 }
@@ -1661,6 +2102,7 @@ function renderBin(){
   const tot = binTotal();
   const kinds = PKEYS.filter(k=>S.bin[k]>0).length;
   const buildable = LAYOUTS.filter(L=>matchPlan(L).ok).length;
+  syncRailBin();
   $("#bin-summary").innerHTML = `
     <div class="scanlog" style="border:0;background:transparent;padding:0">
       <b>${tot}</b> pieces · <b>${kinds}</b> of ${PKEYS.length} types<br>
@@ -1761,40 +2203,72 @@ async function runScan(){
 /* ============================================================
    STAGE 3 — LAYOUTS
    ============================================================ */
+function syncTools(){
+  $$("[data-view]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.view===S.view));
+  $$("[data-filter]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.filter===S.filter));
+  const L = S.planId && layoutById(S.planId);
+  $$("[data-run]").forEach(b=>{ b.textContent = L && L.cls==="dual" ? "Run the race" : "Send a car"; });
+}
+function syncRailBin(){
+  const el = $("#railbin"), tot = binTotal();
+  if(!el) return;
+  el.hidden = tot===0;
+  if(tot) el.innerHTML = `<b>${tot}</b> pieces · <b>${LAYOUTS.filter(L=>matchPlan(L).ok).length}</b> of ${LAYOUTS.length} buildable`;
+}
 function renderPlans(){
   const rows = LAYOUTS.map(L=>({L, m:matchPlan(L), c:compute(L)}))
     .sort((a,b)=> (b.m.ok - a.m.ok) || (b.m.pct - a.m.pct));
-  const shown = S.onlyBuildable ? rows.filter(r=>r.m.ok) : rows;
-  const list = $("#planlist");
+  const shown = rows.filter(r=> (!S.onlyBuildable || r.m.ok) && (S.filter==="all" || r.L.cls===S.filter));
+  const list = $("#planlist"), keep = list.scrollTop, keepX = list.scrollLeft;
   if(!shown.length){
-    list.innerHTML = `<div class="empty">Nothing is buildable from the bin yet.<br><br>
+    list.innerHTML = `<div class="empty">Nothing here is buildable from the bin yet.<br><br>
       ${S.onlyBuildable?'Untick "buildable only" to see what each layout would need.':"Add some pieces in stage 2."}</div>`;
   } else {
     list.innerHTML = shown.map(({L,m,c})=>{
       const miss = m.missing.map(x=>`${x.n}× ${PIECES[x.k].nm}`).join(", ");
       return `<button class="plancard${m.ok?"":" short"}" data-plan="${L.id}" aria-pressed="${S.planId===L.id}">
+        <span class="thumb">${drawIso(L, c.geo, {thumb:true, alt:L.nm})}</span>
         <span class="r1"><h4>${esc(L.nm)}</h4><span class="tag ${L.cls}">${L.cls==="dual"?"2-lane race":"single line"}</span></span>
-        <span class="desc">${esc(L.blurb)}</span>
         <span class="meta"><span>${esc(L.skill)}</span><span>${(c.an.totalDist/100).toFixed(1)} m</span><span>${Math.round(c.geo.w)}×${Math.round(c.geo.h)} cm</span><span>${m.tot} pieces</span></span>
         ${m.ok?"":`<span class="bar"><i style="width:${Math.round(m.pct*100)}%"></i></span>
         <span class="missing">${Math.round(m.pct*100)}% of the kit — short: ${esc(miss)}</span>`}
       </button>`;
     }).join("");
+    list.scrollTop = keep; list.scrollLeft = keepX;
+  }
+  if(!keep && !keepX){
+    const sel = list.querySelector(`[data-plan="${S.planId}"]`);
+    if(sel){ list.scrollTop = Math.max(0, sel.offsetTop - 12); list.scrollLeft = Math.max(0, sel.offsetLeft - 12); }
   }
   if(!S.planId || !shown.some(r=>r.L.id===S.planId)) S.planId = shown.length ? shown[0].L.id : null;
+  $$("[data-plan]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.plan===S.planId));
   renderPlanDetail();
 }
 
 function renderPlanDetail(){
+  stopSim(); syncTools();
   const L = S.planId && layoutById(S.planId);
   if(!L){
-    $("#plan-plate").innerHTML = `<div class="empty">Pick a layout to see its plan.</div>`;
+    $("#plan-plate").innerHTML = `<div class="empty">Pick a layout to see it.</div>`;
+    $("#plan-cap").innerHTML = ""; $("#tune").hidden = true;
     $("#plan-readout").innerHTML = ""; $("#plan-checks").innerHTML = ""; $("#plan-kit").innerHTML = "";
     $("#btn-build").disabled = true;
     return;
   }
   const c = compute(L), m = matchPlan(L);
-  $("#plan-plate").innerHTML = drawSheet(L, c.geo, {titleCells:titleCells(L,c,m), alt:L.nm+" scale plan"}) + drawProfile(c.geo, c.an);
+  $("#plan-cap").innerHTML = `<h3>${esc(L.nm)}</h3><p>${esc(L.blurb)}</p>`;
+  $("#plan-plate").innerHTML = (S.view==="iso"
+      ? drawIso(L, c.geo, {alt:L.nm+" in 3D"})
+      : drawSheet(L, c.geo, {titleCells:titleCells(L,c,m), alt:L.nm+" scale plan"})) + drawProfile(c.geo, c.an);
+  const hr = heightRange(L), tune = $("#tune");
+  tune.hidden = !hr;
+  if(hr){
+    const sl = $("#hslider"), now = Math.round(c.an.startH);
+    sl.min = hr.min; sl.max = hr.max; if(document.activeElement !== sl) sl.value = now;
+    $("#hval").textContent = now + " cm";
+    $("#hwas").textContent = now === hr.base ? "as designed" : `designed for ${hr.base} cm`;
+    $("#hreset").hidden = now === hr.base;
+  }
   $("#plan-readout").innerHTML = readoutHTML(c, m);
   $("#plan-checks").innerHTML = buildChecks(L, c.geo, c.an)
     .map(x=>`<div class="check ${x.level}"><span class="pill">${x.pill}</span><span class="txt">${x.txt}</span></div>`).join("")
@@ -1847,11 +2321,12 @@ function renderBuild(){
   $("#steplist").innerHTML = html;
 
   /* the sheet */
-  $("#build-plate").innerHTML = drawSheet(L, c.geo, {
-    reveal: st.reveal, current: st.kind==="seg" ? st.reveal : null,
-    titleCells:[{k:"LAYOUT",v:L.nm.toUpperCase()},{k:"STEP",v:`${S.step+1} OF ${total}`},{k:"STAGE",v:st.t.toUpperCase().slice(0,22)},{k:"PIECES",v:String(m.tot)},{k:"SCALE",v:"1:64 · CM"}],
-    alt:`${L.nm}, step ${S.step+1} of ${total}: ${st.t}`
-  });
+  stopSim(); syncTools();
+  const vopt = {reveal: st.reveal, current: st.kind==="seg" ? st.reveal : null,
+    alt:`${L.nm}, step ${S.step+1} of ${total}: ${st.t}`};
+  $("#build-plate").innerHTML = S.view==="iso" ? drawIso(L, c.geo, vopt) : drawSheet(L, c.geo, {...vopt,
+    titleCells:[{k:"LAYOUT",v:L.nm.toUpperCase()},{k:"STEP",v:`${S.step+1} OF ${total}`},{k:"STAGE",v:st.t.toUpperCase().slice(0,22)},{k:"PIECES",v:String(m.tot)},{k:"SCALE",v:"1:64 · CM"}]});
+  const runBtn = $("#s3 [data-run]"); if(runBtn) runBtn.hidden = st.kind!=="test";
   $("#build-readout").innerHTML = readoutHTML(c, m);
 
   /* the current step card */
@@ -1907,6 +2382,7 @@ function canEnter(n){
 }
 function go(n){
   if(!canEnter(n)) return;
+  stopSim(); syncRailBin();
   S.stage = n;
   $$(".stage").forEach((el,i)=> el.classList.toggle("on", i===n));
   $$(".stepper button").forEach((b,i)=>{
@@ -1933,7 +2409,7 @@ document.addEventListener("click", e=>{
   if(sc){
     const id = sc.dataset.set;
     S.sets.has(id) ? S.sets.delete(id) : S.sets.add(id);
-    setsToBin(); renderSets(); save();
+    setsToBin(); renderSets(); save(); syncRailBin();
     $$(".stepper button").forEach((b,i)=> b.disabled = !canEnter(i));
     return;
   }
@@ -1951,6 +2427,13 @@ document.addEventListener("click", e=>{
   }
   const si = t.closest("[data-step]");
   if(si){ goStep(+si.dataset.step); return; }
+  const vw = t.closest("[data-view]");
+  if(vw){ S.view = vw.dataset.view; save(); if(S.stage===3) renderBuild(); else renderPlanDetail(); return; }
+  const rn = t.closest("[data-run]");
+  if(rn){ startSim(rn.closest(".platewrap")); return; }
+  const fl = t.closest("[data-filter]");
+  if(fl){ S.filter = fl.dataset.filter; renderPlans(); return; }
+  if(t.closest("#hreset")){ delete S.heights[S.planId]; save(); renderPlans(); return; }
   const nv = t.closest("[data-nav]");
   if(nv){ goStep(S.step + (nv.dataset.nav==="next"?1:-1)); return; }
   if(t.closest("#drop")) $("#file").click();
@@ -1958,10 +2441,16 @@ document.addEventListener("click", e=>{
 });
 
 document.addEventListener("change", e=>{
+  if(e.target.id==="hslider"){ save(); renderPlans(); return; }
   const ck = e.target.closest("[data-ck]");
   if(ck) ck.closest(".ck").classList.toggle("on", ck.checked);
 });
 document.addEventListener("input", e=>{
+  if(e.target.id==="hslider" && S.planId){
+    const L = layoutById(S.planId), hr = heightRange(L), v = +e.target.value;
+    if(v === hr.base) delete S.heights[L.id]; else S.heights[L.id] = v/hr.base;
+    renderPlanDetail(); return;
+  }
   const n = e.target.closest("[data-num]");
   if(n){ S.bin[n.dataset.num] = Math.max(0, Math.min(999, parseInt(n.value,10)||0)); save();
     const s = $("#bin-summary"); if(s){ const tot=binTotal(), kinds=PKEYS.filter(k=>S.bin[k]>0).length, b=LAYOUTS.filter(L=>matchPlan(L).ok).length;
